@@ -1,3 +1,5 @@
+import { config } from  'dotenv';
+config();
 import { ApolloServer } from 'apollo-server';
 import typeDefs from './src/typedefs';
 import resolvers from './src/resolvers';
@@ -34,7 +36,8 @@ const mocks = {
 
 const server = new ApolloServer({
     typeDefs,
-    mocks
+    resolvers,
+    mocks:false
 });
 
 server.listen().then(() => {
