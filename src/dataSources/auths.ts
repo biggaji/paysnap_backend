@@ -3,8 +3,9 @@ import { db } from "../../configs";
 class Auth {
     constructor() {}
 
-    getAllUsers() {
-        return db.query(`SELECT * FROM users`);
+    async getAllUsers() {
+        let users = await db.query(`SELECT * FROM users`);
+        return users.rows;
     }
 
 }

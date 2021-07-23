@@ -3,6 +3,8 @@ import Transaction from './dataSources/transactions';
 import { dateScalar } from "./typedefs";
 
 const auth = new Auth();
+const transactions = new Transaction();
+
 const resolvers = {
     Date: dateScalar,
     Query: ({

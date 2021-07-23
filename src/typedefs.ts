@@ -41,8 +41,8 @@ const typedefs = gql`
         isActivated: Boolean
         avatar: String
         accountBalance: Int!
-        createdAt: String!
-        updatedAt: String
+        createdAt: Date!
+        updatedAt: Date
         transactions: [Transaction!]
     }
 
@@ -52,7 +52,7 @@ const typedefs = gql`
         transactionStatus: String!
         senderId:ID!
         receiverId:ID!
-        transactedAt:String!
+        transactedAt:Date!
     }
 
     enum transactionStatus {
