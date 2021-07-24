@@ -38,21 +38,21 @@ const typedefs = gql`
         username: String!
         country: String!
         password: String!
-        isActivated: Boolean
+        isactivated: Boolean
         avatar: String
-        accountBalance: Int!
-        createdAt: Date!
-        updatedAt: Date
+        accountbalance: Int!
+        createdat: Date!
+        updatedat: Date
         transactions: [Transaction!]
     }
 
     type Transaction {
         id:ID!
         amount:Int!
-        transactionStatus: String!
-        senderId:ID!
-        receiverId:ID!
-        transactedAt:Date!
+        transactionstatus: String!
+        senderid:ID!
+        receiverid:ID!
+        transactedat:Date!
     }
 
     enum transactionStatus {

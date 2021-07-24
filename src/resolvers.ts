@@ -13,9 +13,11 @@ const resolvers = {
         }
     }),
 
-    // Transaction: (_, __, ___) => {
-    //     return 
-    // }
+    User: ({
+        transactions: (_:any, args:any, ctx:any) => {
+            return transactions.getUsersTransactionsHistory(_.id);
+        }
+    }),
 }
 
 export default resolvers;
