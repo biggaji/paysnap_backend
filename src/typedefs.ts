@@ -27,9 +27,24 @@ const typedefs = gql`
         getUser: [User!]
     }
 
-    # type Mutation {
+    type Mutation {
+        createAccount(opts:CreateAccountInputs!): CreateAccountMutationResponse!
+    }
 
-    # }
+    input CreateAccountInputs {
+        fullname: String!
+        email: String!
+        username: String!
+        country: String!
+        password: String!
+    }
+
+    type CreateAccountMutationResponse {
+        code: String!
+        success: Boolean!
+        message: String!
+        user: User
+    }
 
     type User {
         id: ID!
