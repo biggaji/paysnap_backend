@@ -1,4 +1,5 @@
 import { db } from "../../configs";
+import { SendMoneyOptions } from '../../types/transactions_types';
 
 class Transaction {
   constructor() {}
@@ -7,7 +8,7 @@ class Transaction {
     let transactions = await db.query(`SELECT * FROM transactions WHERE senderid = $1`, [id]);
     return transactions.rows;
   }
-  async sendMoney(options:any, senderid:string) {
+  async sendMoney(opts:SendMoneyOptions, senderid:string) {
     // the amount should be converted to  a number first
     // check senders account balance for sufficent funds
     // if enough send, else throw error "insufficent funds" update status to failed
