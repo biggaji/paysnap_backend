@@ -26,7 +26,7 @@ class Auth {
     // if exist throw error, else return data
   }
 
-  async activateAccount(options: any) {
+  async activateAccount(token: any) {
     // check token passed and validate with the one stored
     // if correct, update column to true
   }
