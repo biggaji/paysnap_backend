@@ -24,7 +24,8 @@ const typedefs = gql`
     scalar Date
 
     type Query {
-        getUser: [User!]
+        getUser: [User!],
+        login(opts:LoginInputs!):LoginResponse!
     }
 
     type Mutation {
@@ -39,11 +40,22 @@ const typedefs = gql`
         password: String!
     }
 
+    input LoginInputs {
+        username: String!
+        password: String!
+    }
+
+    type LoginResponse {
+        user:User
+        token:String
+    }
+
     type CreateAccountMutationResponse {
         code: String!
         success: Boolean!
         message: String!
-        user: User
+        user: User,
+        token: String
     }
 
     type User {
