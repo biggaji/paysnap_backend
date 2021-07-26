@@ -128,14 +128,15 @@ class Auth {
     }
   }
 
-  async activateAccount(opts: ActivateAccountOptions) {
-    let { token, email } = opts;
+  async activateAccount(token:string, email:string) {
+
     // check token passed and validate with the one stored
 
-    let dbToken = await db.query(`SELECT verificationtoken FROM users WHERE email = $1`,[email])
-    // if correct, update column to true
-    dbToken = dbToken.rows[0].verificationtoken;
+    // let dbToken = await db.query(`SELECT verificationtoken FROM users WHERE email = $1`,[email])
+    // // if correct, update column to true
+    // dbToken = dbToken.rows[0].verificationtoken;
     // if(Number(token) === dbToken)
+    console.log(token, " ", email);
   }
 
   async getUserData(opts: any) {
