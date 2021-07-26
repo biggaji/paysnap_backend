@@ -1,4 +1,4 @@
 export interface SendMoneyOptions {
-    username: string
+    receiverUsername: string,
     amount: string
 }
