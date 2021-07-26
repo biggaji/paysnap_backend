@@ -66,6 +66,7 @@ const typedefs = gql`
         country: String!
         password: String!
         isactivated: Boolean
+        verificationtoken:String!
         avatar: String
         accountbalance: Int!
         createdat: Date!

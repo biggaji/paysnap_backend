@@ -44,20 +44,16 @@ class Auth {
     });
 
     const msg = {
-      from: `${process.env.MAIL}`,
+      from: `Paysnap Team <noreply@paysnap.com>`,
       to: newUser.rows[0].email,
       subject: "Activate Your Paysnap Account Now",
       html: `<html>
             <body>
             <h1>Welcome to paysnap!</h1>
-            <br>
             <p>You’re just one click away from getting started with Paysnap.
              All you need to do is activate your Paysnap account with the code below.</p>
-             <br>
                   <p>${activationCode}</p>
-             <br>
              <p>Once your account is activated, you can start sending cash to your loved one's using Paysnap.</p>
-              <br>
               <p>You’re receiving this email because you recently created a new Paysnap account.
                If this wasn’t you, please ignore this email.</p>
                </body>
@@ -72,6 +68,10 @@ class Auth {
         console.log(`Mail sent`, res.response);
       }
     });
+
+    // update verificationtoken column  with auth code
+
+    await db.query(`UPDATE users SET verificationtoken = $1`, [activationCode]);
 
 
     // return output
