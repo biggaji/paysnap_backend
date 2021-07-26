@@ -29,7 +29,8 @@ const typedefs = gql`
     }
 
     type Mutation {
-        createAccount(opts:CreateAccountInputs!): CreateAccountMutationResponse!
+        createAccount(opts:CreateAccountInputs!): CreateAccountMutationResponse!,
+        activateAccount(token:String!): ActivateAccountResponse!
     }
 
     input CreateAccountInputs {
@@ -43,6 +44,13 @@ const typedefs = gql`
     input LoginInputs {
         username: String!
         password: String!
+    }
+    
+    type ActivateAccountResponse {
+        code:String!,
+        success:Boolean!,
+        message:String!,
+        user:User
     }
 
     type LoginResponse {

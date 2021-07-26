@@ -63,6 +63,25 @@ const resolvers = {
                 };
             }
         },
+        activateAccount: async (_:any, args:any, ctx:any) => {    
+            try {
+                let token = await auth.activateAccount(args.token, ctx.user.email);
+                console.log(token, " Resolver");
+                return {
+                    code: 200,
+                    sucess: true,
+                    message: "Account activated",
+                    user: null
+                }
+            } catch (e) {
+                return {
+                  code: 400,
+                  sucess: false,
+                  message: "Account not activated",
+                  user: null,
+                };
+            }
+        }
     }),
 
     User: ({
