@@ -1,5 +1,5 @@
 import { db } from "../../configs";
-import { CreateAccoutOptions, CheckUserOptions, LoginOptions, ActivateAccountOptions } from '../../types/auths_types';
+import { CreateAccoutOptions, CheckUserOptions, LoginOptions } from '../../types/auths_types';
 import generateActivationCode from '../../@utils/generateActivationCode';
 import { AuthenticationError } from 'apollo-server';
 import bcrypt from 'bcryptjs';

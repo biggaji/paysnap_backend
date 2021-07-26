@@ -15,8 +15,3 @@ export interface CheckUserOptions {
   username?: string;
   email?: string;
 }
-
-export interface ActivateAccountOptions {
-  email: string;
-  token: string;
-}
