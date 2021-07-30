@@ -16,20 +16,29 @@ class Transaction {
     // the amount should be converted to  a number first
     // check senders account balance for sufficent funds
     // get receipent id by username
-    let receipentId = await (await db.query(`SELECT id FROM users WHERE username = $1`, [receiverUsername])).rows[0].id; 
+    let receipentId = await db.query(`SELECT id FROM users WHERE username = $1`, [receiverUsername]);
+    
+    receipentId = receipentId.rows[0].id;
 
-    let sender_acct_balance = await (await db.query(`SELECT accountbalance FROM users WHERE id = $1`, [senderid])).rows[0].accountBalance;
-    let receipent_acct_balance = await(
-      await db.query(`SELECT accountbalance FROM users WHERE id = $1`, [
+    let sender_acct_balance:any = await db.query(`SELECT accountbalance FROM users WHERE id = $1`, [senderid]);
+
+    sender_acct_balance = sender_acct_balance.rows[0].accountBalance;
+
+    let receipent_acct_balance:any = await db.query(`SELECT accountbalance FROM users WHERE id = $1`, [
         receipentId,
-      ])
-    ).rows[0].accountBalance;
+      ]
+    );
+
+    receipent_acct_balance = receipent_acct_balance.rows[0].accountBalance;
+
 
     
     // if enough send, else throw error "insufficent funds" update status to failed
     if(sender_acct_balance > amount) {
-     let transfer = await (await db.query(`INSERT INTO transactions (amount, senderid, receiverid)
-      VALUES($1,$2,$3) RETURNING *`,[amount, senderid, receipentId ])).rows[0];
+     let transfer:any = await  db.query(`INSERT INTO transactions (amount, senderid, receiverid)
+      VALUES($1,$2,$3) RETURNING *`,[amount, senderid, receipentId ]);
+
+      transfer = transfer.rows[0];
 
       // subtract amount sent from senders account balance and return remaining
       sender_acct_balance = sender_acct_balance - Number(amount);
@@ -47,8 +56,10 @@ class Transaction {
       // return transfer data
       return transfer;
     } else {
-      let failedtransfer = await (await db.query(`INSERT INTO transactions (amount, senderid, receiverid)
-      VALUES($1,$2,$3) RETURNING *`,[amount, senderid, receipentId ])).rows[0];
+      let failedtransfer:any = await db.query(`INSERT INTO transactions (amount, senderid, receiverid)
+      VALUES($1,$2,$3) RETURNING *`,[amount, senderid, receipentId ]);
+
+      failedtransfer = failedtransfer.rows[0];
 
       let UpdatetransactionStatus = await db.query(
         `UPDATE transactions SET transactionstatus = $1 WHERE id = $2`,

@@ -49,7 +49,7 @@ const resolvers = {
                 return {
                     code: 200,
                     success: true,
-                    message: "User created successfully",
+                    message: "Account created successfully",
                     user: userCreated,
                     token
                 }
