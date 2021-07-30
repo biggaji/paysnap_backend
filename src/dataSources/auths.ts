@@ -77,13 +77,13 @@ class Auth {
     // return output
     return newUser.rows[0];
   }
+
   async login(opts: LoginOptions) {
     let { username, password } = opts;
 
 
     // first check if user exist this.checkUserexist(email)
     let user = await this.checkIfUserExist({username})
-    console.log(user);
 
     // if not exist throw error else check if is activated and compare users password with
     if(user && user !== null) {
@@ -102,12 +102,12 @@ class Auth {
       // not a user
        throw new AuthenticationError("You are not a registered user, please register first!");
     }
-    return null;
   }
 
   async checkIfUserExist(opts: CheckUserOptions) {
     // Takes either an email or username
     let user;
+    
     if(opts.username !== undefined) {
         user = await db.query(`SELECT username FROM users WHERE username = $1`, [opts.username]);
         if(user.rowCount >= 1 ) {

@@ -74,7 +74,7 @@ const typedefs = gql`
         country: String!
         password: String!
         isactivated: Boolean
-        verificationtoken:String!
+        verificationtoken:String
         avatar: String
         accountbalance: Int!
         createdat: Date!
@@ -85,7 +85,7 @@ const typedefs = gql`
     type Transaction {
         id:ID!
         amount:Int!
-        transactionstatus: String!
+        transactionstatus: transactionStatus!
         senderid:ID!
         receiverid:ID!
         transactedat:Date!
