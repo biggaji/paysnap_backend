@@ -26,7 +26,10 @@ const typedefs = gql`
     type Query {
         getUser: [User!],
         login(opts:LoginInputs!):LoginResponse!,
-        getAUser(id:ID!):User
+        getAUser(id:ID!):User!,
+        getAllTransactions: [Transaction!],
+        me: User!,
+        getTransaction(limit:Int!, offset:Int!):[Transaction!],
     }
 
     type Mutation {

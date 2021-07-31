@@ -16,6 +16,9 @@ const resolvers = {
         getAUser: (_:any, args:any) => {
             return auth.getAUserById(args.id);
         },
+        me: (_:any,args:any,ctx:any) => {
+            return auth.getAUserById(ctx.id);
+        },
         login: async (_:any, args:any) => {
             let user = await auth.login(args.opts);
             let token = await sign(
@@ -30,7 +33,13 @@ const resolvers = {
                 user,
                 token
             }
-        }
+        },
+        getAllTransactions: (_:any,args:any,ctx:any) => {
+            return transactions.getAllTransactions(ctx.id);
+        },
+        getTransaction: (_:any, args:any, ctx:any) => {
+            return transactions.getTransaction(args.limit, args.offset, ctx.id);
+        },
     }),
 
     Mutation: ({
