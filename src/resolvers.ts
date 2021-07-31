@@ -13,6 +13,9 @@ const resolvers = {
         getUser: () => {
             return auth.getAllUsers();
         },
+        getAUser: (_:any, args:any) => {
+            return auth.getAUserById(args.id);
+        },
         login: async (_:any, args:any) => {
             let user = await auth.login(args.opts);
             let token = await sign(
