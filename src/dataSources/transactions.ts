@@ -103,7 +103,23 @@ class Transaction {
 
   async getThisYearTransactions(userId:string, year:string) {}
 
-  async getAllTransactions(userId:string) {}
+  async getAllTransactions(userId:string) {
+    try {
+      let allTransactions = await (await db.query(`SELECT * FROM transactions WHERE senderid = $1 ORDER BY transactedat`, [userId])).rows;
+      return allTransactions;
+    } catch (error) {
+      return error;
+    }
+  };
+
+  async getTransaction(limit:number, offset:number, userId:string) {
+    try {
+      let transaction = await db.query(`SELECT * FROM transactions WHERE senderid = $1 ORDER BY transactedat FETCH FIRST $2 ROWS ONLY OFFSET $3`, [userId, limit, offset]);
+      return transaction.rows;
+    } catch (error) {
+      return error;
+    }
+  };
 };
 
 export default Transaction;
