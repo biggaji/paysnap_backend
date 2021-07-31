@@ -30,7 +30,8 @@ const typedefs = gql`
 
     type Mutation {
         createAccount(opts:CreateAccountInputs!): CreateAccountMutationResponse!,
-        activateAccount(token:String!): ActivateAccountResponse!
+        activateAccount(token:String!): ActivateAccountResponse!,
+        sendMoney(opts:SendMoneyInputs!): SendMoneyResponse!
     }
 
     input CreateAccountInputs {
@@ -51,6 +52,18 @@ const typedefs = gql`
         success:Boolean!
         message:String!
         user:User
+    }
+
+    input SendMoneyInputs {
+        receiverUsername:String!
+        amount:Int!
+    }
+
+    type SendMoneyResponse {
+        code:String!
+        success:Boolean!
+        message:String!
+        transaction:Transaction
     }
 
     type LoginResponse {
@@ -85,7 +98,7 @@ const typedefs = gql`
     type Transaction {
         id:ID!
         amount:Int!
-        transactionstatus: transactionStatus!
+        transactionstatus: String!
         senderid:ID!
         receiverid:ID!
         transactedat:Date!

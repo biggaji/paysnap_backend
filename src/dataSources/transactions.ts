@@ -1,84 +1,76 @@
+import { UserInputError } from "apollo-server-errors";
 import { db } from "../../configs";
 import { SendMoneyOptions } from '../../types/transactions_types';
 
 class Transaction {
   constructor() {}
 
-  async getUsersTransactionsHistory(id:any) {
+  async getUserTransactionsHistory(id:any) {
     let transactions = await db.query(`SELECT * FROM transactions WHERE senderid = $1`, [id]);
     return transactions.rows;
   }
   async sendMoney(opts:SendMoneyOptions, senderid:string) {
-    let { amount, receiverUsername } = opts;
-    // let UpdatetransactionStatus; 
-    // let transfer;
-
-    // the amount should be converted to  a number first
-    // check senders account balance for sufficent funds
-    // get receipent id by username
-    let receipentId = await db.query(`SELECT id FROM users WHERE username = $1`, [receiverUsername]);
-    
-    receipentId = receipentId.rows[0].id;
-
-    let sender_acct_balance:any = await db.query(`SELECT accountbalance FROM users WHERE id = $1`, [senderid]);
-
-    sender_acct_balance = sender_acct_balance.rows[0].accountBalance;
-
-    let receipent_acct_balance:any = await db.query(`SELECT accountbalance FROM users WHERE id = $1`, [
-        receipentId,
-      ]
-    );
-
-    receipent_acct_balance = receipent_acct_balance.rows[0].accountBalance;
-
-
-    
-    // if enough send, else throw error "insufficent funds" update status to failed
-    if(sender_acct_balance > amount) {
-     let transfer:any = await  db.query(`INSERT INTO transactions (amount, senderid, receiverid)
-      VALUES($1,$2,$3) RETURNING *`,[amount, senderid, receipentId ]);
-
-      transfer = transfer.rows[0];
-
-      // subtract amount sent from senders account balance and return remaining
-      sender_acct_balance = sender_acct_balance - Number(amount);
+    try {
       
-      // update senders account balance
-      let updateSendersAccountBalance = await db.query(`UPDATE users SET accountbalance = $1 WHERE id = $2`, [sender_acct_balance, senderid]);
+      let { amount, receiverUsername } = opts;
 
-      receipent_acct_balance = receipent_acct_balance + Number(amount);
-
-      let updatereceipentAccountBalance = await db.query(`UPDATE users SET accountbalance = $1 WHERE id = $2`, [receipent_acct_balance, receipentId]);
-
-      // update transaction_status to successful
-      let UpdatetransactionStatus = await db.query(`UPDATE transactions SET transactionstatus = $1 WHERE id = $2`, ['successful', transfer.id]);
-
-      // return transfer data
-      return transfer;
-    } else {
-      let failedtransfer:any = await db.query(`INSERT INTO transactions (amount, senderid, receiverid)
-      VALUES($1,$2,$3) RETURNING *`,[amount, senderid, receipentId ]);
-
-      failedtransfer = failedtransfer.rows[0];
-
-      let UpdatetransactionStatus = await db.query(
-        `UPDATE transactions SET transactionstatus = $1 WHERE id = $2`,
-        ["failed", failedtransfer.id]
+      // get receipent id by username
+      let receipentId = await db.query(`SELECT id FROM users WHERE username = $1`, [receiverUsername]);
+      
+      receipentId = receipentId.rows[0].id;
+  
+      let sender_acct_balance:any = await db.query(`SELECT accountbalance FROM users WHERE id = $1`, [senderid]);
+  
+      sender_acct_balance = sender_acct_balance.rows[0].accountbalance;
+  
+      let receipent_acct_balance:any = await db.query(`SELECT accountbalance FROM users WHERE id = $1`, [
+          receipentId,
+        ]
       );
-
-      return failedtransfer;
-    }
-
-    // let initializeTransaction = await db.query(`INSERT INTO `)
-    // After sending , update both users account balance
-    // sender balance - amount 
-    // receiver balance + amount
-    // update status to successful
-  }
+  
+      receipent_acct_balance = receipent_acct_balance.rows[0].accountbalance;
+  
+      // if enough send, else throw error "insufficent fund"
+      if(sender_acct_balance > amount) {
+       let transfer:any = await  db.query(`INSERT INTO transactions (amount, senderid, receiverid)
+        VALUES($1,$2,$3) RETURNING *`,[amount, senderid, receipentId ]);
+  
+        transfer = transfer.rows[0];
+  
+        // subtract amount sent from senders account balance and return remaining
+        sender_acct_balance = sender_acct_balance - Number(amount);
+        
+        // update senders account balance
+        let updateSendersAccountBalance = await db.query(`UPDATE users SET accountbalance = $1 WHERE id = $2`, [sender_acct_balance, senderid]);
+  
+        receipent_acct_balance = receipent_acct_balance + Number(amount);
+  
+        let updatereceipentAccountBalance = await db.query(`UPDATE users SET accountbalance = $1 WHERE id = $2`, [receipent_acct_balance, receipentId]);
+  
+        // update transaction_status to successful
+        let UpdatetransactionStatus = await db.query(`UPDATE transactions SET transactionstatus = $1 WHERE id = $2`, ['successful', transfer.id]);
+  
+        // return transfer data
+        transfer = await this.getTransactionById(transfer.id);
+        
+        return transfer.rows[0];
+      } else {
+        throw new UserInputError("You account balance is insufficent for this transaction!");
+      }
+    } catch (e) {
+      //an error occured
+      throw e;
+    };
+  };
 
   retryTransaction() {
     
   }
-}
+
+  async getTransactionById(transactionId:string) {
+    let transaction = await db.query(`SELECT * FROM transactions WHERE id = $1`, [transactionId]);
+    return transaction;
+  };
+};
 
 export default Transaction;
