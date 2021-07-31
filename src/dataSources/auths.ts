@@ -1,7 +1,7 @@
 import { db } from "../../configs";
 import { CreateAccoutOptions, CheckUserOptions, LoginOptions } from '../../types/auths_types';
 import generateActivationCode from '../../@utils/generateActivationCode';
-import { AuthenticationError } from 'apollo-server';
+import { AuthenticationError, UserInputError } from 'apollo-server';
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 
@@ -131,6 +131,11 @@ class Auth {
   async activateAccount(token:string, id:string) {
 
     // check token passed and validate with the one stored
+    let userActivated = await (await db.query(`SELECT isactivated FROM users WHERE id = $1`, [id])).rows[0].isactivated;
+
+    if(userActivated) {
+      throw new AuthenticationError("Account is already activated");
+    }
 
     let dbToken:any = await db.query(`SELECT verificationtoken FROM users WHERE id = $1`,[id]);
     // // if correct, update column to true
@@ -145,7 +150,7 @@ class Auth {
 
       return isActivated.rows[0];
     } else {
-      throw new AuthenticationError("Invalid or incorrect token");
+      throw new UserInputError("Invalid or incorrect token");
     }
   }
 
