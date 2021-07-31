@@ -39,7 +39,7 @@ class Transaction {
       receipent_acct_balance = receipent_acct_balance.rows[0].accountbalance;
 
       // if enough send, else throw error "insufficent fund"
-      if (sender_acct_balance > amount) {
+      if (sender_acct_balance >= amount && amount > "0") {
         let transfer: any = await db.query(
           `INSERT INTO transactions (amount, senderid, receiverid)
         VALUES($1,$2,$3) RETURNING *`,

@@ -25,7 +25,8 @@ const typedefs = gql`
 
     type Query {
         getUser: [User!],
-        login(opts:LoginInputs!):LoginResponse!
+        login(opts:LoginInputs!):LoginResponse!,
+        getAUser(id:ID!):User
     }
 
     type Mutation {

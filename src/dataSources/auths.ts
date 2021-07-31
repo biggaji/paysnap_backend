@@ -13,6 +13,11 @@ class Auth {
     return users.rows;
   }
 
+  async getAUserById(id:string) {
+    let user = await db.query(`SELECT * FROM users WHERE id = $1`, [id]);
+    return user.rows[0];
+  }
+
   async createAccount(opts: CreateAccoutOptions) {
     let { fullname, email, username, country , password } = opts!;
     
