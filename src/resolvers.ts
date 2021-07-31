@@ -21,8 +21,7 @@ const resolvers = {
                 id: user.id,
                 email: user.email,
               },
-              process.env.JWT_SECRET!,
-              { expiresIn: "1h" }
+              process.env.JWT_SECRET!
             );
             return {
                 user,
@@ -41,8 +40,7 @@ const resolvers = {
                 id: userCreated.id,
                 email: userCreated.email,
             },
-            process.env.JWT_SECRET!,
-            { expiresIn: "1h" }
+            process.env.JWT_SECRET!
             );
             
             try {
@@ -55,9 +53,9 @@ const resolvers = {
                 }
             } catch (e) {
                 return {
-                  code: e.extensions.response.status,
+                  code: 400,
                   success: false,
-                  message: e.extensions.response.body,
+                  message: e.message,
                   user: null,
                   token: null
                 };
