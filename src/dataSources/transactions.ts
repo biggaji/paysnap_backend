@@ -1,4 +1,5 @@
 import { UserInputError } from "apollo-server-errors";
+import getTodaysDate from "../../@utils/dateFormatter";
 import { db } from "../../configs";
 import { SendMoneyOptions } from '../../types/transactions_types';
 
@@ -95,7 +96,20 @@ class Transaction {
     return transaction;
   }
 
-  async getTodayTransactions(userId:string, date:string) {}
+  async getTodayTransactions(userId:string) {
+    let todayDate = await getTodaysDate();
+    try {
+      let todayTransaction = await db.query(
+        `SELECT * FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') = $2 ORDER BY transactedat
+      `,
+        [userId, todayDate]
+      );
+      return todayTransaction.rows;
+    } catch (error) {
+      console.log(error)
+      return error;
+    }
+  }
 
   async getThisWeekTransactions(userId:string, startDate:string, endDate:string) {}
 

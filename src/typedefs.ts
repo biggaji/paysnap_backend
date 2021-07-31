@@ -30,6 +30,7 @@ const typedefs = gql`
         getAllTransactions: [Transaction!],
         me: User!,
         getTransaction(limit:Int!, offset:Int!):[Transaction!],
+        getTodayTransactions: [Transaction!],
     }
 
     type Mutation {
