@@ -32,7 +32,7 @@ const resolvers = {
     }),
 
     Mutation: ({
-        async createAccount(_:any, args:any) {
+        createAccount: async (_:any, args:any) => {
             let  userCreated = await auth.createAccount(args.opts);
 
             let token = await sign(
@@ -64,21 +64,20 @@ const resolvers = {
             }
         },
         activateAccount: async (_:any, args:any, ctx:any) => {    
+            let user = await auth.activateAccount(args.token, ctx.id);
             try {
-                let token = await auth.activateAccount(args.token, ctx.user.email);
-                console.log(token, " Resolver");
                 return {
                     code: 200,
-                    sucess: true,
+                    success: true,
                     message: "Account activated",
-                    user: null
+                    user:user
                 }
             } catch (e) {
                 return {
                   code: 400,
-                  sucess: false,
+                  success: false,
                   message: "Account not activated",
-                  user: null,
+                  user: null
                 };
             }
         }
