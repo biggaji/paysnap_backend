@@ -43,6 +43,9 @@ const resolvers = {
     getTodayTransactions: (_:any, args: any, ctx:any) => {
         return transactions.getTodayTransactions(ctx.id);
     },
+    getThisYearTransactions: (_:any, args:any, ctx:any) => {
+        return transactions.getThisYearTransactions(ctx.id);
+    }
   },
 
   Mutation: {
