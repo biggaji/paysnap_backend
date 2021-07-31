@@ -78,12 +78,31 @@ const resolvers = {
                   user: null
                 };
             }
+        },
+        sendMoney: async (_:any, args:any, ctx:any) => {
+
+            try {
+                let transaction = await transactions.sendMoney(args.opts, ctx.id);
+                return {
+                    code:200,
+                    success:true,
+                    message: "Transaction Successfull",
+                    transaction,
+                }
+            } catch (e) {
+                return {
+                    code:400,
+                    success:false,
+                    message:e.message,
+                    transaction:null,
+                }
+            }
         }
     }),
 
     User: ({
         transactions: (_:any, args:any, ctx:any) => {
-            return transactions.getUsersTransactionsHistory(_.id);
+            return transactions.getUserTransactionsHistory(_.id);
         }
     }),
 }
