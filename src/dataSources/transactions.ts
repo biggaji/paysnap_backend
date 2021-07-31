@@ -115,12 +115,21 @@ class Transaction {
 
   async getThisMonthTransactions(userId:string, startDate:string, endDate:string) {}
 
-  async getThisYearTransactions(userId:string, year:string) {}
+  async getThisYearTransactions(userId:string) {
+    let year = new Date().getFullYear();
+    try {
+      let yearTransaction = await db.query(`SELECT * FROM transactions WHERE senderid = $1 AND EXTRACT(YEAR FROM transactedat) = $2 ORDER BY transactedat
+      `, [userId, year]);
+      return  yearTransaction.rows;
+    } catch (error) {
+      return error;
+    }
+  }
 
   async getAllTransactions(userId:string) {
     try {
-      let allTransactions = await (await db.query(`SELECT * FROM transactions WHERE senderid = $1 ORDER BY transactedat`, [userId])).rows;
-      return allTransactions;
+      let allTransactions = await db.query(`SELECT * FROM transactions WHERE senderid = $1 ORDER BY transactedat`, [userId]);
+      return allTransactions.rows;
     } catch (error) {
       return error;
     }
