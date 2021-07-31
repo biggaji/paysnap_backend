@@ -21,8 +21,7 @@ const resolvers = {
                 id: user.id,
                 email: user.email,
               },
-              process.env.JWT_SECRET!,
-              { expiresIn: "1h" }
+              process.env.JWT_SECRET!
             );
             return {
                 user,
@@ -41,8 +40,7 @@ const resolvers = {
                 id: userCreated.id,
                 email: userCreated.email,
             },
-            process.env.JWT_SECRET!,
-            { expiresIn: "1h" }
+            process.env.JWT_SECRET!
             );
             
             try {
