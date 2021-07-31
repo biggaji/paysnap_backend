@@ -71,7 +71,7 @@ class Auth {
 
     // update verificationtoken column  with auth code
 
-    await db.query(`UPDATE users SET verificationtoken = $1`, [activationCode]);
+    await db.query(`UPDATE users SET verificationtoken = $1 WHERE id  = $2`, [activationCode, newUser.rows[0].id]);
 
 
     // return output
@@ -128,15 +128,25 @@ class Auth {
     }
   }
 
-  async activateAccount(token:string, email:string) {
+  async activateAccount(token:string, id:string) {
 
     // check token passed and validate with the one stored
 
-    // let dbToken = await db.query(`SELECT verificationtoken FROM users WHERE email = $1`,[email])
+    let dbToken:any = await db.query(`SELECT verificationtoken FROM users WHERE id = $1`,[id]);
     // // if correct, update column to true
-    // dbToken = dbToken.rows[0].verificationtoken;
-    // if(Number(token) === dbToken)
-    console.log(token, " ", email);
+    dbToken = dbToken.rows[0].verificationtoken;
+
+    if(token === dbToken) {
+      //update isActivated to true
+      let isActivated = await db.query(`UPDATE users SET isactivated = $1 WHERE id = $2 RETURNING *`,['true', id]);
+      
+      //set verification token to null
+      let verificationToken = await db.query(`UPDATE users SET verificationtoken = $1 WHERE id = $2`, [null, id]);
+
+      return isActivated.rows[0];
+    } else {
+      throw new AuthenticationError("Invalid or incorrect token");
+    }
   }
 
   async getUserData(opts: any) {

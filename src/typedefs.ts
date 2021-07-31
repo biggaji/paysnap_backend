@@ -47,9 +47,9 @@ const typedefs = gql`
     }
     
     type ActivateAccountResponse {
-        code:String!,
-        success:Boolean!,
-        message:String!,
+        code:String!
+        success:Boolean!
+        message:String!
         user:User
     }
 

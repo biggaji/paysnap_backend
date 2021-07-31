@@ -1,8 +1,10 @@
 import { config } from  'dotenv';
 config();
-import { ApolloServer } from 'apollo-server';
+import { ApolloServer, AuthenticationError } from 'apollo-server';
 import typeDefs from './src/typedefs';
 import resolvers from './src/resolvers';
+import { tokenize } from '@apollo/protobufjs';
+import decodeUser from './@utils/decodeUser';
 
 // const mocks = {
 //   Query: () => ({
@@ -37,6 +39,17 @@ import resolvers from './src/resolvers';
 const server = new ApolloServer({
     typeDefs,
     resolvers,
+    context: async ({ req }) => {
+
+      let token = req.headers.authorization || req.headers.x_user_token;
+      const user = await decodeUser(token);
+
+      if(!user) {
+        throw new AuthenticationError("Session expired, login again!");
+      }
+      
+      return user;
+    }
 });
 
 server.listen().then(() => {
