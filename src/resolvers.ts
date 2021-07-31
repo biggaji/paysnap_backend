@@ -53,9 +53,9 @@ const resolvers = {
                 }
             } catch (e) {
                 return {
-                  code: e.extensions.response.status,
+                  code: 400,
                   success: false,
-                  message: e.extensions.response.body,
+                  message: e.message,
                   user: null,
                   token: null
                 };
