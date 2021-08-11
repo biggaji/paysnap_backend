@@ -1,18 +1,19 @@
 import { UserInputError } from "apollo-server-errors";
 import getTodaysDate from "../../@utils/dateFormatter";
 import { db } from "../../configs";
-import { SendMoneyOptions } from '../../types/transactions_types';
+import { SendMoneyOptions, CalendarOpts } from '../../types/transactions_types';
 
 class Transaction {
   constructor() {}
 
   async getUserTransactionsHistory(id: any) {
     let transactions = await db.query(
-      `SELECT * FROM transactions WHERE senderid = $1`,
+      `SELECT * FROM transactions WHERE senderid  = $1 ORDER BY transactedat DESC`,
       [id]
     );
     return transactions.rows;
-  }
+  };
+
   async sendMoney(opts: SendMoneyOptions, senderid: string) {
     try {
       let { amount, receiverUsername } = opts;
@@ -90,7 +91,7 @@ class Transaction {
 
   async getTransactionById(transactionId: string) {
     let transaction = await db.query(
-      `SELECT * FROM transactions WHERE id = $1`,
+      `SELECT * FROM transactions WHERE id = $1 ORDER BY transactedat DESC`,
       [transactionId]
     );
     return transaction;
@@ -100,7 +101,7 @@ class Transaction {
     let todayDate = await getTodaysDate();
     try {
       let todayTransaction = await db.query(
-        `SELECT * FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') = $2 ORDER BY transactedat
+        `SELECT * FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') = $2 ORDER BY transactedat DESC
       `,
         [userId, todayDate]
       );
@@ -118,7 +119,7 @@ class Transaction {
   async getThisYearTransactions(userId:string) {
     let year = new Date().getFullYear();
     try {
-      let yearTransaction = await db.query(`SELECT * FROM transactions WHERE senderid = $1 AND EXTRACT(YEAR FROM transactedat) = $2 ORDER BY transactedat
+      let yearTransaction = await db.query(`SELECT * FROM transactions WHERE senderid = $1 AND EXTRACT(YEAR FROM transactedat) = $2 ORDER BY transactedat DESC
       `, [userId, year]);
       return  yearTransaction.rows;
     } catch (error) {
@@ -128,7 +129,7 @@ class Transaction {
 
   async getAllTransactions(userId:string) {
     try {
-      let allTransactions = await db.query(`SELECT * FROM transactions WHERE senderid = $1 ORDER BY transactedat`, [userId]);
+      let allTransactions = await db.query(`SELECT * FROM transactions WHERE senderid = $1 ORDER BY transactedat DESC`, [userId]);
       return allTransactions.rows;
     } catch (error) {
       return error;
@@ -137,7 +138,7 @@ class Transaction {
 
   async getTransaction(limit:number, offset:number, userId:string) {
     try {
-      let transaction = await db.query(`SELECT * FROM transactions WHERE senderid = $1 ORDER BY transactedat FETCH FIRST $2 ROWS ONLY OFFSET $3`, [userId, limit, offset]);
+      let transaction = await db.query(`SELECT * FROM transactions WHERE senderid = $1 ORDER BY transactedat DESC FETCH FIRST $2 ROWS ONLY OFFSET $3`, [userId, limit, offset]);
       return transaction.rows;
     } catch (error) {
       return error;
