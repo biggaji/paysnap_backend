@@ -112,9 +112,13 @@ class Transaction {
     }
   }
 
-  async getThisWeekTransactions(userId:string, startDate:string, endDate:string) {}
+  async getThisWeekTransactions(userId:string, startDate:string, endDate:string) {
+    // That weeks monday to present day
+  }
 
-  async getThisMonthTransactions(userId:string, startDate:string, endDate:string) {}
+  async getThisMonthTransactions(userId:string, startDate:string, endDate:string) {
+    // The month start date to present date within month
+  }
 
   async getThisYearTransactions(userId:string) {
     let year = new Date().getFullYear();
