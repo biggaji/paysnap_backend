@@ -21,100 +21,102 @@ export const dateScalar = new GraphQLScalarType ({
 
 
 const typedefs = gql`
-    scalar Date
+  scalar Date
 
-    type Query {
-        getUser: [User!],
-        login(opts:LoginInputs!):LoginResponse!,
-        getAUser(id:ID!):User!,
-        getAllTransactions: [Transaction!],
-        me: User!,
-        getTransaction(limit:Int!, offset:Int!):[Transaction!],
-        getTodayTransactions: [Transaction!],
-        getThisYearTransactions: [Transaction!],
-    }
+  type Query {
+    getUser: [User!]
+    login(opts: LoginInputs!): LoginResponse!
+    getAUser(id: ID!): User!
+    getAllTransactions: [Transaction!]
+    me: User!
+    getTransaction(limit: Int!, offset: Int!): [Transaction!]
+    getTodayTransactions: [Transaction!]
+    getThisWeekTransactions: [Transaction!]
+    getThisMonthTransactions: [Transaction!]
+    getThisYearTransactions: [Transaction!]
+  }
 
-    type Mutation {
-        createAccount(opts:CreateAccountInputs!): CreateAccountMutationResponse!,
-        activateAccount(token:String!): ActivateAccountResponse!,
-        sendMoney(opts:SendMoneyInputs!): SendMoneyResponse!
-    }
+  type Mutation {
+    createAccount(opts: CreateAccountInputs!): CreateAccountMutationResponse!
+    activateAccount(token: String!): ActivateAccountResponse!
+    sendMoney(opts: SendMoneyInputs!): SendMoneyResponse!
+  }
 
-    input CreateAccountInputs {
-        fullname: String!
-        email: String!
-        username: String!
-        country: String!
-        password: String!
-    }
+  input CreateAccountInputs {
+    fullname: String!
+    email: String!
+    username: String!
+    country: String!
+    password: String!
+  }
 
-    input LoginInputs {
-        username: String!
-        password: String!
-    }
-    
-    type ActivateAccountResponse {
-        code:String!
-        success:Boolean!
-        message:String!
-        user:User
-    }
+  input LoginInputs {
+    username: String!
+    password: String!
+  }
 
-    input SendMoneyInputs {
-        receiverUsername:String!
-        amount:Int!
-    }
+  type ActivateAccountResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+    user: User
+  }
 
-    type SendMoneyResponse {
-        code:String!
-        success:Boolean!
-        message:String!
-        transaction:Transaction
-    }
+  input SendMoneyInputs {
+    receiverUsername: String!
+    amount: Int!
+  }
 
-    type LoginResponse {
-        user:User
-        token:String
-    }
+  type SendMoneyResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+    transaction: Transaction
+  }
 
-    type CreateAccountMutationResponse {
-        code: String!
-        success: Boolean!
-        message: String!
-        user: User,
-        token: String
-    }
+  type LoginResponse {
+    user: User
+    token: String
+  }
 
-    type User {
-        id: ID!
-        fullname: String!
-        email: String!
-        username: String!
-        country: String!
-        password: String!
-        isactivated: Boolean
-        verificationtoken:String
-        avatar: String
-        accountbalance: Int!
-        createdat: Date!
-        updatedat: Date
-        transactions: [Transaction!]
-    }
+  type CreateAccountMutationResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+    user: User
+    token: String
+  }
 
-    type Transaction {
-        id:ID!
-        amount:Int!
-        transactionstatus: String!
-        senderid:ID!
-        receiverid:ID!
-        transactedat:Date!
-    }
+  type User {
+    id: ID!
+    fullname: String!
+    email: String!
+    username: String!
+    country: String!
+    password: String!
+    isactivated: Boolean
+    verificationtoken: String
+    avatar: String
+    accountbalance: Int!
+    createdat: Date!
+    updatedat: Date
+    transactions: [Transaction!]
+  }
 
-    enum transactionStatus {
-        PENDING
-        SUCCESSFUL
-        FAILED
-    }
+  type Transaction {
+    id: ID!
+    amount: Int!
+    transactionstatus: String!
+    senderid: ID!
+    receiverid: ID!
+    transactedat: Date!
+  }
+
+  enum transactionStatus {
+    PENDING
+    SUCCESSFUL
+    FAILED
+  }
 `;
 
 export default typedefs;

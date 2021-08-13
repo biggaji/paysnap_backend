@@ -1,6 +1,7 @@
 import { UserInputError } from "apollo-server-errors";
 import getTodaysDate from "../../@utils/dateFormatter";
 import getMonth from "../../@utils/monthFormatter";
+import getFirstDayOfTheWeek from "../../@utils/weekFormatter";
 import { db } from "../../configs";
 import { SendMoneyOptions, CalendarOpts } from '../../types/transactions_types';
 
@@ -113,8 +114,11 @@ class Transaction {
     }
   }
 
-  async getThisWeekTransactions(userId:string, startDate:string, endDate:string) {
+  async getThisWeekTransactions(userId:string) {
     // That weeks monday to present day
+    let firstDayOfTheWeek = await getFirstDayOfTheWeek();
+    console.log(firstDayOfTheWeek);
+
   }
 
   async getThisMonthTransactions(userId:string) {
