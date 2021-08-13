@@ -78,6 +78,10 @@ class Transaction {
         transfer = await this.getTransactionById(transfer.id);
 
         return transfer.rows[0];
+      } else if(amount <= "0"){
+        throw new UserInputError(
+          "You can only send any amount greater than 0!"
+        );
       } else {
         throw new UserInputError(
           "You account balance is insufficent for this transaction!"
@@ -116,9 +120,18 @@ class Transaction {
 
   async getThisWeekTransactions(userId:string) {
     // That weeks monday to present day
-    let firstDayOfTheWeek = await getFirstDayOfTheWeek();
-    console.log(firstDayOfTheWeek);
+    let firstDateOfTheWeek = await getFirstDayOfTheWeek();
+    let todayDate = await getTodaysDate();
 
+    try {
+      let WeeklyTransaction = await db.query(
+        `SELECT * FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') BETWEEN $2 AND $3`,
+        [userId, firstDateOfTheWeek, todayDate]
+      );
+      return WeeklyTransaction.rows;
+    } catch (error) {
+      return error;
+    }
   }
 
   async getThisMonthTransactions(userId:string) {
