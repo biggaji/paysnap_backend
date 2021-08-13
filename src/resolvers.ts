@@ -40,12 +40,18 @@ const resolvers = {
     getTransaction: (_: any, args: any, ctx: any) => {
       return transactions.getTransaction(args.limit, args.offset, ctx.id);
     },
-    getTodayTransactions: (_:any, args: any, ctx:any) => {
-        return transactions.getTodayTransactions(ctx.id);
+    getTodayTransactions: (_: any, args: any, ctx: any) => {
+      return transactions.getTodayTransactions(ctx.id);
     },
-    getThisYearTransactions: (_:any, args:any, ctx:any) => {
-        return transactions.getThisYearTransactions(ctx.id);
-    }
+    getThisWeekTransactions: (_: any, args: any, ctx: any) => {
+      return transactions.getThisWeekTransactions(ctx.id);
+    },
+    getThisMonthTransactions: (_: any, args: any, ctx: any) => {
+      return transactions.getThisMonthTransactions(ctx.id);
+    },
+    getThisYearTransactions: (_: any, args: any, ctx: any) => {
+      return transactions.getThisYearTransactions(ctx.id);
+    },
   },
 
   Mutation: {
