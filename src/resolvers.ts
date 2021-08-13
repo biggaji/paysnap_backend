@@ -34,23 +34,15 @@ const resolvers = {
         token,
       };
     },
-    getAllTransactions: (_: any, args: any, ctx: any) => {
-      return transactions.getAllTransactions(ctx.id);
-    },
-    getTransaction: (_: any, args: any, ctx: any) => {
-      return transactions.getTransaction(args.limit, args.offset, ctx.id);
-    },
-    getTodayTransactions: (_: any, args: any, ctx: any) => {
-      return transactions.getTodayTransactions(ctx.id);
-    },
-    getThisWeekTransactions: (_: any, args: any, ctx: any) => {
-      return transactions.getThisWeekTransactions(ctx.id);
-    },
-    getThisMonthTransactions: (_: any, args: any, ctx: any) => {
-      return transactions.getThisMonthTransactions(ctx.id);
-    },
-    getThisYearTransactions: (_: any, args: any, ctx: any) => {
-      return transactions.getThisYearTransactions(ctx.id);
+    
+    getTransaction: async (_: any, args: any, ctx: any) => {
+      let transact = await transactions.getTransactions(
+        args.opts.limit,
+        args.opts.offset,
+        ctx.id,
+        args.opts.calOpts
+      );
+      return transact;
     },
   },
 

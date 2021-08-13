@@ -1,4 +1,6 @@
 import { UserInputError } from "apollo-server-errors";
+import { truncateSync } from "fs";
+import { off } from "process";
 import getTodaysDate from "../../@utils/dateFormatter";
 import getMonth from "../../@utils/monthFormatter";
 import getFirstDayOfTheWeek from "../../@utils/weekFormatter";
@@ -103,13 +105,13 @@ class Transaction {
     return transaction;
   }
 
-  async getTodayTransactions(userId:string) {
+  async getTodayTransactions(userId:string, limit:number, offset:number) {
     let todayDate = await getTodaysDate();
     try {
       let todayTransaction = await db.query(
-        `SELECT * FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') = $2 ORDER BY transactedat DESC
+        `SELECT * FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') = $2 ORDER BY transactedat DESC FETCH FIRST $3 ROWS ONLY OFFSET $4
       `,
-        [userId, todayDate]
+        [userId, todayDate, limit, offset]
       );
       return todayTransaction.rows;
     } catch (error) {
@@ -118,15 +120,16 @@ class Transaction {
     }
   }
 
-  async getThisWeekTransactions(userId:string) {
+  async getThisWeekTransactions(userId:string, limit:number, offset:number) {
     // That weeks monday to present day
     let firstDateOfTheWeek = await getFirstDayOfTheWeek();
     let todayDate = await getTodaysDate();
 
     try {
       let WeeklyTransaction = await db.query(
-        `SELECT * FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') BETWEEN $2 AND $3`,
-        [userId, firstDateOfTheWeek, todayDate]
+        `SELECT * FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') BETWEEN $2 AND $3 ORDER BY transactedat DESC
+         FETCH FIRST $4 ROWS ONLY OFFSET $5`,
+        [userId, firstDateOfTheWeek, todayDate, limit, offset]
       );
       return WeeklyTransaction.rows;
     } catch (error) {
@@ -134,7 +137,7 @@ class Transaction {
     }
   }
 
-  async getThisMonthTransactions(userId:string) {
+  async getThisMonthTransactions(userId:string, limit:number, offset:number) {
     // The month start date to present date within month
     let startDate, endDate, month, year;
     year = new Date().getFullYear();
@@ -143,37 +146,82 @@ class Transaction {
     endDate = await getTodaysDate();
 
     try {
-      let monthlyTransaction =  await db.query(`SELECT * FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') BETWEEN $2 AND $3` ,[userId, startDate, endDate]);
+      let monthlyTransaction = await db.query(
+        `SELECT * FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') BETWEEN $2 
+      AND $3 ORDER BY transactedat DESC FETCH FIRST $4 ROWS ONLY OFFSET $5
+      `,
+        [userId, startDate, endDate, limit, offset]
+      );
       return monthlyTransaction.rows;
     } catch (error) {
       return error;
     }
   }
 
-  async getThisYearTransactions(userId:string) {
+  async getThisYearTransactions(userId:string, limit:number, offset:number) {
     let year = new Date().getFullYear();
     try {
-      let yearTransaction = await db.query(`SELECT * FROM transactions WHERE senderid = $1 AND EXTRACT(YEAR FROM transactedat) = $2 ORDER BY transactedat DESC
-      `, [userId, year]);
+      let yearTransaction = await db.query(
+        `SELECT * FROM transactions WHERE senderid = $1 AND EXTRACT(YEAR FROM transactedat) = $2 ORDER BY transactedat
+       DESC FETCH FIRST $3 ROWS ONLY OFFSET $4
+      `,
+        [userId, year, limit, offset]
+      );
       return  yearTransaction.rows;
     } catch (error) {
       return error;
     }
   }
 
-  async getAllTransactions(userId:string) {
+  async getAllTransactions(userId:string, limit:number, offset:number) {
     try {
-      let allTransactions = await db.query(`SELECT * FROM transactions WHERE senderid = $1 ORDER BY transactedat DESC`, [userId]);
+      let allTransactions = await db.query(
+        `SELECT * FROM transactions WHERE senderid = $1 ORDER BY transactedat DESC FETCH FIRST $2 ROWS ONLY OFFSET $3`,
+        [userId, limit, offset]
+      );
       return allTransactions.rows;
     } catch (error) {
       return error;
     }
   };
 
-  async getTransaction(limit:number, offset:number, userId:string) {
+  async getTransactions(limit:number, offset:number, userId:string, transactionCalendar: CalendarOpts) {
     try {
-      let transaction = await db.query(`SELECT * FROM transactions WHERE senderid = $1 ORDER BY transactedat DESC FETCH FIRST $2 ROWS ONLY OFFSET $3`, [userId, limit, offset]);
-      return transaction.rows;
+      let transaction;
+      switch (transactionCalendar) {
+        case "today":
+          transaction = await this.getTodayTransactions(userId, limit, offset);
+          break;
+        case "week":
+          transaction = await this.getThisWeekTransactions(
+            userId,
+            limit,
+            offset
+          );
+          break;
+        case "month":
+          transaction = await this.getThisMonthTransactions(
+            userId,
+            limit,
+            offset
+          );
+          break;
+        case "year":
+          transaction = await this.getThisYearTransactions(
+            userId,
+            limit,
+            offset
+          );
+          break;
+        case "all":
+          transaction = await this.getAllTransactions(
+            userId,
+            limit,
+            offset
+          );
+          break;
+      }
+      return transaction;
     } catch (error) {
       return error;
     }
