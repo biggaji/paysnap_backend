@@ -1,5 +1,6 @@
 import { UserInputError } from "apollo-server-errors";
 import getTodaysDate from "../../@utils/dateFormatter";
+import getMonth from "../../@utils/monthFormatter";
 import { db } from "../../configs";
 import { SendMoneyOptions, CalendarOpts } from '../../types/transactions_types';
 
@@ -116,8 +117,20 @@ class Transaction {
     // That weeks monday to present day
   }
 
-  async getThisMonthTransactions(userId:string, startDate:string, endDate:string) {
+  async getThisMonthTransactions(userId:string) {
     // The month start date to present date within month
+    let startDate, endDate, month, year;
+    year = new Date().getFullYear();
+    month = getMonth();
+    startDate = `${year}-${month}-01`;
+    endDate = await getTodaysDate();
+
+    try {
+      let monthlyTransaction =  await db.query(`SELECT * FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') BETWEEN $2 AND $3` ,[userId, startDate, endDate]);
+      return monthlyTransaction.rows;
+    } catch (error) {
+      return error;
+    }
   }
 
   async getThisYearTransactions(userId:string) {
