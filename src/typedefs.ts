@@ -27,13 +27,8 @@ const typedefs = gql`
     getUser: [User!]
     login(opts: LoginInputs!): LoginResponse!
     getAUser(id: ID!): User!
-    getAllTransactions: [Transaction!]
     me: User!
-    getTransaction(limit: Int!, offset: Int!): [Transaction!]
-    getTodayTransactions: [Transaction!]
-    getThisWeekTransactions: [Transaction!]
-    getThisMonthTransactions: [Transaction!]
-    getThisYearTransactions: [Transaction!]
+    getTransaction(opts:TransactionInputs): [Transaction!]
   }
 
   type Mutation {
@@ -53,6 +48,12 @@ const typedefs = gql`
   input LoginInputs {
     username: String!
     password: String!
+  }
+
+  input TransactionInputs {
+      limit:Int!
+      offset:Int!,
+      calOpts:String!
   }
 
   type ActivateAccountResponse {

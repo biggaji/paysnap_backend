@@ -3,4 +3,4 @@ export interface SendMoneyOptions {
     amount: string
 }
 
-export type CalendarOpts =  "week" | "today" | "year" | "month";
+export type CalendarOpts =  "week" | "today" | "year" | "month" | "all";
