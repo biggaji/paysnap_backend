@@ -1,11 +1,10 @@
 import { UserInputError } from "apollo-server-errors";
-import { truncateSync } from "fs";
-import { off } from "process";
 import getTodaysDate from "../../@utils/dateFormatter";
 import getMonth from "../../@utils/monthFormatter";
 import getFirstDayOfTheWeek from "../../@utils/weekFormatter";
 import { db } from "../../configs";
 import { SendMoneyOptions, CalendarOpts } from '../../types/transactions_types';
+import { compare } from 'bcryptjs';
 
 class Transaction {
   constructor() {}
@@ -20,7 +19,7 @@ class Transaction {
 
   async sendMoney(opts: SendMoneyOptions, senderid: string) {
     try {
-      let { amount, receiverUsername } = opts;
+      let { amount, receiverUsername, pin } = opts;
 
       // get receipent id by username
       let receipentId = await db.query(
@@ -43,6 +42,20 @@ class Transaction {
       );
 
       receipent_acct_balance = receipent_acct_balance.rows[0].accountbalance;
+
+      // check transaction pin validity
+
+      let savedPin:any = await db.query(`SELECT pin FROM users WHERE id = $1`, [senderid]);
+
+      savedPin = savedPin.rows[0].pin;
+
+      let incomingPin = pin.toString();
+
+      let pinCheck = await compare(incomingPin, savedPin);
+
+      if(!pinCheck) {
+        throw new UserInputError("Incorrect transaction pin");
+      }
 
       // if enough send, else throw error "insufficent fund"
       if (sender_acct_balance >= amount && amount > "0") {
@@ -94,8 +107,6 @@ class Transaction {
       throw e;
     }
   }
-
-  retryTransaction() {}
 
   async getTransactionById(transactionId: string) {
     let transaction = await db.query(

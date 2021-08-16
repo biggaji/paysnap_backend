@@ -3,7 +3,6 @@ config();
 import { ApolloServer, AuthenticationError } from 'apollo-server';
 import typeDefs from './src/typedefs';
 import resolvers from './src/resolvers';
-import { tokenize } from '@apollo/protobufjs';
 import decodeUser from './@utils/decodeUser';
 
 // const mocks = {
