@@ -35,7 +35,9 @@ const resolvers = {
       };
     },
     
-    getTransaction: async (_: any, args: any, ctx: any) => {
+    getTransaction: async (_: any, args: any, ctx: any, info:any) => {
+      // console.log("Info: ", info);golden for pagnation
+
       let transact = await transactions.getTransactions(
         args.opts.limit,
         args.opts.offset,
@@ -113,6 +115,9 @@ const resolvers = {
         };
       }
     },
+    setupPin: async (_:any, args:any, ctx:any) => {
+      return auth.setupPin(args.pin,ctx.id);
+    }
   },
 
   User: {

@@ -154,6 +154,17 @@ class Auth {
     }
   }
 
+  async setupPin(pin:number, id:string) {
+    try {
+      let transactPin = pin.toString();
+      let hashedPin = await bcrypt.hash(transactPin, 10);
+      let pinsetup = await db.query(`UPDATE users SET pin = $1 WHERE id = $2 RETURNING pin`, [hashedPin, id]);
+      return (pinsetup.rows[0].pin !== null) ? true : false;
+    } catch (error) {
+      return error;
+    }
+  }
+
   async getUserData(opts: any) {
     let { username } = opts;
     let user = await db.query(`SELECT * from users WHERE username = $1`, [username]);

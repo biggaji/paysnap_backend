@@ -1,16 +1,14 @@
 import { db } from "../../configs";
-import { updatePasswordOpts } from "../../types/settings_types";
+import { updatePasswordOpts, updatePinOpts } from "../../types/settings_types";
 
 class Setting {
-    constructor() {}
+  constructor() {}
 
-    updateUsername(newusername:string, id:string) {
+  updateUsername(newusername: string, id: string) {}
 
-    }
+  updatePassword(opts: updatePasswordOpts, id:string) {}
 
-    updatePassword(opts: updatePasswordOpts) {
-
-    }
+  updatePin(opts: updatePinOpts, id:string) {}
 }
 
 export default Setting;
