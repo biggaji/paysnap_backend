@@ -5,6 +5,16 @@ import { AuthenticationError } from 'apollo-server';
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 
+// nodemailer configs
+
+    let mailTransport = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: `${process.env.MAIL}`,
+        pass: `${process.env.MAIL_PASSWORD}`
+      }
+    });
+
 class Auth {
   constructor() {}
 
@@ -37,16 +47,6 @@ class Auth {
 
     // send activation token using mailgun
     let activationCode = generateActivationCode();
-
-    // nodemailer configs
-
-    let mailTransport = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: `${process.env.MAIL}`,
-        pass: `${process.env.MAIL_PASSWORD}`
-      }
-    });
 
     const msg = {
       from: `Paysnap Team <noreply@paysnap.com>`,

@@ -2,6 +2,7 @@ import Auth from './dataSources/auths';
 import Transaction from './dataSources/transactions';
 import { dateScalar } from "./typedefs";
 import { sign } from "jsonwebtoken";
+import { encrypt } from "../@utils/encryption";
 
 
 const auth = new Auth();
@@ -38,13 +39,36 @@ const resolvers = {
     getTransaction: async (_: any, args: any, ctx: any, info:any) => {
       // console.log("Info: ", info);golden for pagnation
 
-      let transact = await transactions.getTransactions(
-        args.opts.limit,
-        args.opts.offset,
-        ctx.id,
-        args.opts.calOpts
-      );
-      return transact;
+      try {
+        let transact = await transactions.getTransactions(
+          args.opts.limit,
+          args.opts.offset,
+          ctx.id,
+          args.opts.calOpts
+        );
+        // console.log(transact);
+        
+        let cursorHash = transact[transact.length - 1].transactedat;
+        console.log(encrypt(cursorHash));
+
+        let allTransact = await transactions.countAllTransaction(
+          ctx.id,
+          "year"
+        );
+        console.log(`Count: `, allTransact[0].count);
+
+        return {
+          transactions: transact,
+          hasNextpage:true,
+          cursor: cursorHash
+        }
+      } catch (error) {
+        return {
+          transactions: null,
+          hasNextpage: false,
+          cursor: null
+        }
+      }
     },
   },
 
