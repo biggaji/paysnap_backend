@@ -4,6 +4,7 @@ import getMonth from "../../@utils/monthFormatter";
 import getFirstDayOfTheWeek from "../../@utils/weekFormatter";
 import { db } from "../../configs";
 import { SendMoneyOptions, CalendarOpts } from '../../types/transactions_types';
+import { decrypt } from '../../@utils/encryption';
 import { compare } from 'bcryptjs';
 
 class Transaction {
@@ -15,7 +16,7 @@ class Transaction {
       [id]
     );
     return transactions.rows;
-  };
+  }
 
   async sendMoney(opts: SendMoneyOptions, senderid: string) {
     try {
@@ -45,7 +46,10 @@ class Transaction {
 
       // check transaction pin validity
 
-      let savedPin:any = await db.query(`SELECT pin FROM users WHERE id = $1`, [senderid]);
+      let savedPin: any = await db.query(
+        `SELECT pin FROM users WHERE id = $1`,
+        [senderid]
+      );
 
       savedPin = savedPin.rows[0].pin;
 
@@ -53,7 +57,7 @@ class Transaction {
 
       let pinCheck = await compare(incomingPin, savedPin);
 
-      if(!pinCheck) {
+      if (!pinCheck) {
         throw new UserInputError("Incorrect transaction pin");
       }
 
@@ -93,7 +97,7 @@ class Transaction {
         transfer = await this.getTransactionById(transfer.id);
 
         return transfer.rows[0];
-      } else if(amount <= "0"){
+      } else if (amount <= "0") {
         throw new UserInputError(
           "You can only send any amount greater than 0!"
         );
@@ -116,7 +120,7 @@ class Transaction {
     return transaction;
   }
 
-  async getTodayTransactions(userId:string, limit:number, offset:number) {
+  async getTodayTransactions(userId: string, limit: number, offset: number) {
     let todayDate = await getTodaysDate();
     try {
       let todayTransaction = await db.query(
@@ -126,12 +130,12 @@ class Transaction {
       );
       return todayTransaction.rows;
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return error;
     }
   }
 
-  async getThisWeekTransactions(userId:string, limit:number, offset:number) {
+  async getThisWeekTransactions(userId: string, limit: number, offset: number) {
     // That weeks monday to present day
     let firstDateOfTheWeek = await getFirstDayOfTheWeek();
     let todayDate = await getTodaysDate();
@@ -148,7 +152,11 @@ class Transaction {
     }
   }
 
-  async getThisMonthTransactions(userId:string, limit:number, offset:number) {
+  async getThisMonthTransactions(
+    userId: string,
+    limit: number,
+    offset: number
+  ) {
     // The month start date to present date within month
     let startDate, endDate, month, year;
     year = new Date().getFullYear();
@@ -169,7 +177,7 @@ class Transaction {
     }
   }
 
-  async getThisYearTransactions(userId:string, limit:number, offset:number) {
+  async getThisYearTransactions(userId: string, limit: number, offset: number) {
     let year = new Date().getFullYear();
     try {
       let yearTransaction = await db.query(
@@ -178,13 +186,13 @@ class Transaction {
       `,
         [userId, year, limit, offset]
       );
-      return  yearTransaction.rows;
+      return yearTransaction.rows;
     } catch (error) {
       return error;
     }
   }
 
-  async getAllTransactions(userId:string, limit:number, offset:number) {
+  async getAllTransactions(userId: string, limit: number, offset: number) {
     try {
       let allTransactions = await db.query(
         `SELECT * FROM transactions WHERE senderid = $1 ORDER BY transactedat DESC FETCH FIRST $2 ROWS ONLY OFFSET $3`,
@@ -194,9 +202,14 @@ class Transaction {
     } catch (error) {
       return error;
     }
-  };
+  }
 
-  async getTransactions(limit:number, offset:number, userId:string, transactionCalendar: CalendarOpts) {
+  async getTransactions(
+    limit: number,
+    offset: number,
+    userId: string,
+    transactionCalendar: CalendarOpts
+  ) {
     try {
       let transaction;
       switch (transactionCalendar) {
@@ -225,18 +238,92 @@ class Transaction {
           );
           break;
         case "all":
-          transaction = await this.getAllTransactions(
-            userId,
-            limit,
-            offset
-          );
+          transaction = await this.getAllTransactions(userId, limit, offset);
           break;
       }
       return transaction;
     } catch (error) {
       return error;
     }
-  };
+  }
+
+  // Count all transactions Method for pagination
+
+  async countTodaysTransaction(userId: string, after?: string) {
+    let todayDate = await getTodaysDate();
+    let todayTransaction;
+    try {
+      if (after !== undefined) {
+        todayTransaction = await db.query(
+          `SELECT COUNT(id) FROM transactions WHERE senderid = $1 AND transactedat < $2 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') = $3 ORDER BY transactedat DESC`,
+          [userId, after, todayDate]
+        );
+        return todayTransaction.rows;
+      } else {
+        todayTransaction = await db.query(
+          `SELECT COUNT(id) FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') = $2 ORDER BY transactedat DESC`,
+          [userId, todayDate]
+        );
+        return todayTransaction.rows;
+      }
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  }
+
+  async CountThisYearTransactions(userId: string, after?:string) {
+    let year = new Date().getFullYear();
+    let yearTransaction;
+    try {
+      if(after !== undefined) {
+        yearTransaction = await db.query(
+          `SELECT COUNT(id) FROM transactions WHERE senderid = $1 AND transactedat < $2 AND EXTRACT(YEAR FROM transactedat) = $3
+      `,
+          [userId, after, year]
+        );
+      console.log(`Transaction after: `, yearTransaction.rows);
+
+        // return yearTransaction.rows;
+      } else {
+        yearTransaction = await db.query(
+        `SELECT COUNT(id) FROM transactions WHERE senderid = $1 AND EXTRACT(YEAR FROM transactedat) = $2
+      `,
+        [userId, year]
+      );
+    }
+    console.log(`Transaction: `, yearTransaction.rows);
+    return yearTransaction.rows;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async countAllTransaction(userId: string, transactionCalendar: CalendarOpts) {
+    let transaction;
+    try {
+      switch (transactionCalendar) {
+        case "today":
+          transaction = await this.countTodaysTransaction(userId);
+          break;
+          case "year":
+            transaction = await this.CountThisYearTransactions(userId);
+            break;
+        case "week":
+          transaction = await this.countTodaysTransaction(userId);
+          break;
+        case "month":
+          transaction = await this.countTodaysTransaction(userId);
+          break;
+        case "all":
+          transaction = await this.countTodaysTransaction(userId);
+          break;
+      }
+      return transaction;
+    } catch (error) {
+      return error;
+    }
+  }
 };
 
 export default Transaction;

@@ -28,7 +28,8 @@ const typedefs = gql`
     login(opts: LoginInputs!): LoginResponse!
     getAUser(id: ID!): User!
     me: User!
-    getTransaction(opts:FetchTransactionInputs): [Transaction!]
+    getTransaction(opts:FetchTransactionInputs): FetchTransactionResponse!
+    # getNextTransactions(limit:Int!, cursor:String!):FetchTransactionResponse!
   }
 
   type Mutation {
@@ -75,6 +76,12 @@ const typedefs = gql`
     success: Boolean!
     message: String!
     transaction: Transaction
+  }
+
+  type FetchTransactionResponse {
+    transactions: [Transaction!]
+    hasNextPage:Boolean!,
+    cursor:String
   }
 
   type LoginResponse {
