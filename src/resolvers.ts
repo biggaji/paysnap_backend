@@ -47,13 +47,15 @@ const resolvers = {
           args.opts.calOpts
         );
         // console.log(transact);
+        // console.log(transact.length);
+
         
         let cursorHash = transact[transact.length - 1].transactedat;
         console.log(encrypt(cursorHash));
 
-        let allTransact = await transactions.countAllTransaction(
+        let allTransact = await transactions.countTransaction(
           ctx.id,
-          "year"
+          args.opts.calOpts
         );
         console.log(`Count: `, allTransact[0].count);
 
