@@ -252,16 +252,17 @@ class Transaction {
   async countTodaysTransaction(userId: string, after?: string) {
     let todayDate = await getTodaysDate();
     let todayTransaction;
+    let cursor = decrypt(after);
     try {
       if (after !== undefined) {
         todayTransaction = await db.query(
-          `SELECT COUNT(id) FROM transactions WHERE senderid = $1 AND transactedat < $2 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') = $3 ORDER BY transactedat DESC`,
-          [userId, after, todayDate]
+          `SELECT COUNT(id) FROM transactions WHERE senderid = $1 AND transactedat < $2 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') = $3`,
+          [userId, cursor, todayDate]
         );
         return todayTransaction.rows;
       } else {
         todayTransaction = await db.query(
-          `SELECT COUNT(id) FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') = $2 ORDER BY transactedat DESC`,
+          `SELECT COUNT(id) FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') = $2`,
           [userId, todayDate]
         );
         return todayTransaction.rows;
@@ -271,44 +272,112 @@ class Transaction {
       return error;
     }
   }
+  async countThisWeekTransactions(
+    userId: string,
+    limit: number,
+    offset: number
+  ) {
+    // That weeks monday to present day
+    let firstDateOfTheWeek = await getFirstDayOfTheWeek();
+    let todayDate = await getTodaysDate();
 
-  async CountThisYearTransactions(userId: string, after?:string) {
-    let year = new Date().getFullYear();
-    let yearTransaction;
     try {
-      if(after !== undefined) {
-        yearTransaction = await db.query(
-          `SELECT COUNT(id) FROM transactions WHERE senderid = $1 AND transactedat < $2 AND EXTRACT(YEAR FROM transactedat) = $3
-      `,
-          [userId, after, year]
-        );
-      console.log(`Transaction after: `, yearTransaction.rows);
-
-        // return yearTransaction.rows;
-      } else {
-        yearTransaction = await db.query(
-        `SELECT COUNT(id) FROM transactions WHERE senderid = $1 AND EXTRACT(YEAR FROM transactedat) = $2
-      `,
-        [userId, year]
+      let WeeklyTransaction = await db.query(
+        `SELECT * FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') BETWEEN $2 AND $3 ORDER BY transactedat DESC
+         FETCH FIRST $4 ROWS ONLY OFFSET $5`,
+        [userId, firstDateOfTheWeek, todayDate, limit, offset]
       );
-    }
-    console.log(`Transaction: `, yearTransaction.rows);
-    return yearTransaction.rows;
+      return WeeklyTransaction.rows;
     } catch (error) {
       return error;
     }
   }
 
-  async countAllTransaction(userId: string, transactionCalendar: CalendarOpts) {
+  async countThisMonthTransactions(
+    userId: string,
+    limit: number,
+    offset: number
+  ) {
+    // The month start date to present date within month
+    let startDate, endDate, month, year;
+    year = new Date().getFullYear();
+    month = getMonth();
+    startDate = `${year}-${month}-01`;
+    endDate = await getTodaysDate();
+
+    try {
+      let monthlyTransaction = await db.query(
+        `SELECT * FROM transactions WHERE senderid = $1 AND TO_CHAR(transactedat :: DATE, 'yyyy-mm-dd') BETWEEN $2 
+      AND $3 ORDER BY transactedat DESC FETCH FIRST $4 ROWS ONLY OFFSET $5
+      `,
+        [userId, startDate, endDate, limit, offset]
+      );
+      return monthlyTransaction.rows;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async CountThisYearTransactions(userId: string, after?: string) {
+    let year = new Date().getFullYear();
+    let yearTransaction;
+    let cursor = decrypt(after);
+
+    try {
+      if (after !== undefined) {
+        yearTransaction = await db.query(
+          `SELECT COUNT(id) FROM transactions WHERE senderid = $1 AND transactedat < $2 AND EXTRACT(YEAR FROM transactedat) = $3
+      `,
+          [userId, cursor, year]
+        );
+        console.log(`Transaction after: `, yearTransaction.rows);
+
+        // return yearTransaction.rows;
+      } else {
+        yearTransaction = await db.query(
+          `SELECT COUNT(id) FROM transactions WHERE senderid = $1 AND EXTRACT(YEAR FROM transactedat) = $2
+      `,
+          [userId, year]
+        );
+      }
+      console.log(`Transaction: `, yearTransaction.rows);
+      return yearTransaction.rows;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async countAllTransactions(userId: string, after?:string) {
+    let allTransactions;
+    try {
+      if(after !== undefined) {
+        let cursor = decrypt(after);
+        allTransactions = await db.query(
+          `SELECT COUNT(id) FROM transactions WHERE senderid = $1 AND transactedat < $2`,
+          [userId, cursor]
+        );
+      } else {
+         allTransactions = await db.query(
+          `SELECT COUNT(id) FROM transactions WHERE senderid = $1`,
+          [userId]
+        );
+      }
+      return allTransactions.rows;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async countTransaction(userId: string, transactionCalendar: CalendarOpts) {
     let transaction;
     try {
       switch (transactionCalendar) {
         case "today":
           transaction = await this.countTodaysTransaction(userId);
           break;
-          case "year":
-            transaction = await this.CountThisYearTransactions(userId);
-            break;
+        case "year":
+          transaction = await this.CountThisYearTransactions(userId);
+          break;
         case "week":
           transaction = await this.countTodaysTransaction(userId);
           break;
@@ -316,7 +385,7 @@ class Transaction {
           transaction = await this.countTodaysTransaction(userId);
           break;
         case "all":
-          transaction = await this.countTodaysTransaction(userId);
+          transaction = await this.countAllTransactions(userId);
           break;
       }
       return transaction;
