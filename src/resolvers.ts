@@ -46,7 +46,7 @@ const resolvers = {
           ctx.id,
           args.opts.calOpts
         );
-        // console.log(transact);
+        console.log(transact);
         // console.log(transact.length);
 
         
@@ -57,6 +57,8 @@ const resolvers = {
           ctx.id,
           args.opts.calOpts
         );
+        // console.log(allTransact);
+
         console.log(`Count: `, allTransact[0].count);
 
         return {
