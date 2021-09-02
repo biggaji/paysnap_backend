@@ -265,7 +265,8 @@ class Transaction {
           [userId, todayDate]
         );
       }
-      return todayTransaction.rows;
+      console.log(todayTransaction.rows[0].count);
+      return todayTransaction.rows[0].count;
     } catch (error) {
       console.log(error);
       return error;
@@ -291,7 +292,7 @@ class Transaction {
         );
       }
       console.log(WeeklyTransaction)
-      return WeeklyTransaction.rows;
+      return WeeklyTransaction.rows[0].count;
     } catch (error) {
       return error;
     }
@@ -323,7 +324,7 @@ class Transaction {
          [userId, startDate, endDate]
        );
       }
-      return monthlyTransaction.rows;
+      return monthlyTransaction.rows[0].count;
     } catch (error) {
       return error;
     }
@@ -352,7 +353,7 @@ class Transaction {
         );
       }
       console.log(`Transaction: `, yearTransaction.rows);
-      return yearTransaction.rows;
+      return yearTransaction.rows[0].count;
     } catch (error) {
       return error;
     }
@@ -373,7 +374,7 @@ class Transaction {
           [userId]
         );
       }
-      return allTransactions.rows;
+      return allTransactions.rows[0].count;
     } catch (error) {
       return error;
     }

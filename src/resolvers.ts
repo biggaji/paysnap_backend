@@ -46,36 +46,45 @@ const resolvers = {
           ctx.id,
           args.opts.calOpts
         );
-        console.log(transact);
-        // console.log(transact.length);
-
-        
-        let cursorHash = transact[transact.length - 1].transactedat;
-        console.log(encrypt(cursorHash));
 
         let allTransact = await transactions.countTransaction(
           ctx.id,
           args.opts.calOpts
         );
-        // console.log(allTransact);
+        
+        
+        console.log(`Count: `, allTransact);
+        let cursor, hasNextPage, cursorHash;
+        
+        if (transact.length > 0) {
+          cursorHash = encrypt(transact[transact.length - 1].transactedat);
+          console.log(cursorHash);
+        }  
 
-        console.log(`Count: `, allTransact[0].count);
+        if(transact && transact.length < allTransact) {
+          hasNextPage = true;
+          cursor = cursorHash;
+        } else {
+          hasNextPage = false;
+          cursor = "";
+        }
 
         return {
           transactions: transact,
-          hasNextpage:true,
-          cursor: cursorHash
+          hasNextPage,
+          cursor
         }
       } catch (error) {
+        console.log(error)
         return {
           transactions: null,
-          hasNextpage: false,
+          hasNextpage: null,
           cursor: null
         }
       }
     },
   },
-
+  
   Mutation: {
     createAccount: async (_: any, args: any) => {
       let userCreated = await auth.createAccount(args.opts);

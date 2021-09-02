@@ -80,7 +80,7 @@ const typedefs = gql`
 
   type FetchTransactionResponse {
     transactions: [Transaction!]
-    hasNextPage:Boolean!,
+    hasNextPage:Boolean,
     cursor:String
   }
 
