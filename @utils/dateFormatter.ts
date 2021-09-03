@@ -43,16 +43,25 @@ function getTodaysDate() {
         formatMonth = "12";
         break;
     }
+    
     let todaysDate:any;
-    if(formatMonth.length === 1) {
-      formatMonth = `0${formatMonth}`;
-      let formatMont = Number(formatMonth);
-      todaysDate = `${year}-${formatMont}-${date}`;
+    let formatMont;
+    let newDate;
+    let stringDate = date.toString();
+    
+    if (stringDate.length === 1) {
+      stringDate = `0${stringDate}`;
+      newDate = Number(stringDate);
+      todaysDate = `${year}-${formatMont}-${newDate}`;
     }
 
-      todaysDate = `${year}-${formatMonth}-${date}`;
+    if(formatMonth.length === 1) {
+      formatMonth = `0${formatMonth}`;
+      formatMont = Number(formatMonth);
+      todaysDate = `${year}-${formatMont}-${newDate}`;
+    } 
 
-    
+      todaysDate = `${year}-${formatMonth}-${stringDate}`;
     return todaysDate;
 } 
 

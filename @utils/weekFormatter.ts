@@ -34,12 +34,19 @@ function getFirstDayOfTheWeek() {
     }
 
     firstDayOfTheWeek = firstDayOfTheWeek.toString();
+    let formatDayOfWeek;
+    let firstDayOfTheWeekArray = firstDayOfTheWeek.split("");
+    console.log(firstDayOfTheWeekArray)
+    firstDayOfTheWeek = firstDayOfTheWeekArray[1];
+
+    // if()
 
     if(firstDayOfTheWeek.length === 1) {
         firstDayOfTheWeek = `0${firstDayOfTheWeek}`;
-        let formatDayOfWeek = Number(firstDayOfTheWeek);
+        formatDayOfWeek = Number(firstDayOfTheWeek);
         startWeek = `${year}-${month}-${formatDayOfWeek}`;
     }
+    console.log(date,  " " , day)
 
     startWeek = `${year}-${month}-${firstDayOfTheWeek}`;
     return startWeek;
