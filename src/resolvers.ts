@@ -42,26 +42,24 @@ const resolvers = {
       try {
         let transact = await transactions.getTransactions(
           args.opts.limit,
-          args.opts.offset,
           ctx.id,
           args.opts.calOpts
         );
 
-        let allTransact = await transactions.countTransaction(
+        let allTransactCount = await transactions.countTransaction(
           ctx.id,
           args.opts.calOpts
         );
         
         
-        console.log(`Count: `, allTransact);
         let cursor, hasNextPage, cursorHash;
         
-        if (transact.length > 0) {
+        if (transact.length > 1) {
           cursorHash = encrypt(transact[transact.length - 1].transactedat);
           console.log(cursorHash);
         }  
 
-        if(transact && transact.length < allTransact) {
+        if(transact && transact.length < allTransactCount) {
           hasNextPage = true;
           cursor = cursorHash;
         } else {
@@ -83,6 +81,60 @@ const resolvers = {
         }
       }
     },
+
+    getNextTransactions: async (_:any, args:any, ctx:any) => {
+      // "
+      
+      try {
+
+        let transact = await transactions.getTransactions(
+          args.limit,
+          ctx.id,
+          args.calOpts,
+          args.after
+        );
+
+
+        let remainingTransactionCount = await transactions.countTransaction(
+          ctx.id,
+          args.calOpts,
+          args.after
+        );
+                  
+        let cursor, hasNextPage, cursorHash;
+        
+        if (transact.length > 1) {
+          cursorHash = encrypt(transact[transact.length - 1].transactedat);
+          console.log(cursorHash);
+        }  
+
+        if (transact && transact.length < remainingTransactionCount) {
+          hasNextPage = true;
+          cursor = cursorHash;
+        } else {
+          hasNextPage = false;
+          cursor = "";
+        }
+
+        return {
+          transactions: transact,
+          hasNextPage,
+          cursor
+        }
+      } catch (error) {
+        console.log(error)
+        return {
+          transactions: null,
+          hasNextpage: null,
+          cursor: null
+        }
+      }
+      
+      
+      
+      
+      // "
+    }
   },
   
   Mutation: {

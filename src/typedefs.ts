@@ -29,7 +29,7 @@ const typedefs = gql`
     getAUser(id: ID!): User!
     me: User!
     getTransaction(opts:FetchTransactionInputs): FetchTransactionResponse!
-    # getNextTransactions(limit:Int!, cursor:String!):FetchTransactionResponse!
+    getNextTransactions(limit:Int!, calOpts:String!, after:String!):FetchTransactionResponse!
   }
 
   type Mutation {
@@ -54,7 +54,6 @@ const typedefs = gql`
 
   input FetchTransactionInputs {
       limit:Int!
-      offset:Int!,
       calOpts:String!
   }
 
