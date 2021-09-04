@@ -134,7 +134,28 @@ const resolvers = {
       
       
       // "
-    }
+    },
+
+    addAvatar: async (_:any, args:any, ctx:any) => {
+      try {
+        let avatar = await auth.uploadAvatar(args.avatarUrl, ctx.id);
+        return {
+          code:200,
+          success:true,
+          message:"Avatar uploaded successfully",
+          avatar
+        }
+      } catch (error) {
+        console.log('Avatar error: ', error);
+        return {
+          code:400,
+          success:false,
+          message:"Avatar upload failed",
+          avatar: null
+        }
+      }
+    },
+
   },
   
   Mutation: {

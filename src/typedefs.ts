@@ -37,6 +37,7 @@ const typedefs = gql`
     activateAccount(token: String!): ActivateAccountResponse!
     sendMoney(opts: SendMoneyInputs!): SendMoneyResponse!
     setupPin(pin:Int!): Boolean!
+    addAvatar(avatarUrl:String!):AddAvatarResponse!
   }
 
   input CreateAccountInputs {
@@ -62,6 +63,13 @@ const typedefs = gql`
     success: Boolean!
     message: String!
     user: User
+  }
+
+  type AddAvatarResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+    avatar: User
   }
 
   input SendMoneyInputs {
