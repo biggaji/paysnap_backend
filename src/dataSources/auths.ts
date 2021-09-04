@@ -175,6 +175,15 @@ class Auth {
     let user = await db.query(`SELECT * from users WHERE username = $1`, [username]);
     return user.rows[0];
   }
+
+  async uploadAvatar(avatarUrl:string, id:string) {
+    try {
+      let avatar = await db.query(`UPDATE users SET avatar = $1 WHERE id = $2 RETURNING avatar`, [avatarUrl,id]);
+      return avatar.rows[0];
+    } catch (error) {
+      return error;
+    }
+  }
 }
 
 export default Auth;
