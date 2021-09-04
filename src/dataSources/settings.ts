@@ -26,15 +26,15 @@ class Setting {
       let comparePasswords = await compare(oldpassword, cPassword);
 
       if(!comparePasswords) {
-        return new UserInputError("The old password you entered is incorrect");
+        throw new UserInputError("The old password you entered is incorrect");
       } else {
         let hashedPassword = await hash(newpassword, 10);
         updatedPassword = await db.query(`UPDATE users SET password = $1 WHERE id = $2 RETURNING password`, [hashedPassword, id]);
         return (updatedPassword.rows[0].password !== null) ? true : false;
       }
 
-    } catch (error) {
-      throw error;
+    } catch (e) {
+      throw e;
     }
   }
 
@@ -55,7 +55,7 @@ class Setting {
       let comparePins = await compare(oPin, currentPin);
 
       if(!comparePins) {
-        return new UserInputError("The old pin you entered is incorrect");
+        throw new UserInputError("The old pin you entered is incorrect");
       } else {
         let hashedPin = await hash(nPin, 10);
         pinUpdate = await db.query(
@@ -65,8 +65,8 @@ class Setting {
       }
 
       return (pinUpdate.rows[0].pin !== null) ? true : false;
-    } catch (error) {
-      throw error;
+    } catch (e) {
+      throw e;
     }
   }
 
@@ -77,8 +77,8 @@ class Setting {
         [avatarUrl, id]
       );
       return avatar.rows[0];
-    } catch (error) {
-      throw error;
+    } catch (e) {
+      throw e;
     }
   }
 }

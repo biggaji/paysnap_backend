@@ -28,12 +28,8 @@ const typedefs = gql`
     login(opts: LoginInputs!): LoginResponse!
     getAUser(id: ID!): User!
     me: User!
-    getTransaction(opts: FetchTransactionInputs): FetchTransactionResponse!
-    getNextTransactions(
-      limit: Int!
-      calOpts: String!
-      after: String!
-    ): FetchTransactionResponse!
+    getTransactions(opts: FetchTransactionInputs): FetchTransactionResponse!
+    getNextTransactions(limit: Int!calOpts: String!after: String!): FetchTransactionResponse!
   }
 
   type Mutation {

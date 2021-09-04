@@ -7,7 +7,7 @@ export function encrypt(data:string) {
     return bufStr.toString("base64");
 };
 
-// decrypt hash into a utf8 redable format
+// decrypt hash into a utf8 readable format
 export function decrypt(hash: any) {
     let data = Buffer.from(hash, "base64");
     return data.toString("utf8");

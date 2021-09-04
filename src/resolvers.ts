@@ -38,7 +38,7 @@ const resolvers = {
       };
     },
 
-    getTransaction: async (_: any, args: any, ctx: any, info: any) => {
+    getTransactions: async (_: any, args: any, ctx: any, info: any) => {
       // console.log("Info: ", info);golden for pagnation
 
       try {
@@ -187,8 +187,8 @@ const resolvers = {
       try {
         let passwordUpdated = await settings.updatePassword(args.opts, ctx.id);
         return {
-          code: 400,
-          success: false,
+          code: 200,
+          success: true,
           message: "Password updated successfully",
           passwordUpdated
         }
@@ -229,17 +229,17 @@ const resolvers = {
       try {
         let pinUpdated = await settings.updatePin(args.opts, ctx.id);
         return {
-          code: 400,
-          success: false,
+          code: 200,
+          success: true,
           message: "Transaction pin updated successfully",
           pinUpdated
         };
-      } catch (error) {
-        console.log(`Update Transaction Pin error`, error);
+      } catch (e) {
+        console.log(`Update Transaction Pin error`, e);
         return {
           code: 400,
           success: false,
-          message: error.message,
+          message: e.message,
           pinUpdated: false
         }
       }
@@ -254,12 +254,12 @@ const resolvers = {
           message: "Avatar uploaded successfully",
           avatar,
         };
-      } catch (error) {
-        console.log("Avatar error: ", error);
+      } catch (e) {
+        console.log("Avatar error: ", e);
         return {
           code: 400,
           success: false,
-          message: error.message,
+          message: e.message,
           avatar: null,
         };
       }
