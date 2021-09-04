@@ -136,32 +136,13 @@ const resolvers = {
       // "
     },
 
-    addAvatar: async (_:any, args:any, ctx:any) => {
-      try {
-        let avatar = await auth.uploadAvatar(args.avatarUrl, ctx.id);
-        return {
-          code:200,
-          success:true,
-          message:"Avatar uploaded successfully",
-          avatar
-        }
-      } catch (error) {
-        console.log('Avatar error: ', error);
-        return {
-          code:400,
-          success:false,
-          message:"Avatar upload failed",
-          avatar: null
-        }
-      }
-    },
-
+    
   },
   
   Mutation: {
     createAccount: async (_: any, args: any) => {
       let userCreated = await auth.createAccount(args.opts);
-
+      
       let token = await sign(
         {
           username: userCreated.username,
@@ -169,72 +150,94 @@ const resolvers = {
           email: userCreated.email,
         },
         process.env.JWT_SECRET!
-      );
+        );
+        
+        try {
+          return {
+            code: 200,
+            success: true,
+            message: "Account created successfully",
+            user: userCreated,
+            token,
+          };
+        } catch (e) {
+          return {
+            code: 400,
+            success: false,
+            message: e.message,
+            user: null,
+            token: null,
+          };
+        }
+      },
+      activateAccount: async (_: any, args: any, ctx: any) => {
+        let user = await auth.activateAccount(args.token, ctx.id);
+        try {
+          return {
+            code: 200,
+            success: true,
+            message: "Account activated",
+            user: user,
+          };
+        } catch (e) {
+          return {
+            code: 400,
+            success: false,
+            message: "Account not activated",
+            user: null,
+          };
+        }
+      },
+      
+      sendMoney: async (_: any, args: any, ctx: any) => {
+        try {
+          let transaction = await transactions.sendMoney(args.opts, ctx.id);
+          return {
+            code: 200,
+            success: true,
+            message: "Transaction Successfull",
+            transaction,
+          };
+        } catch (e) {
+          return {
+            code: 400,
+            success: false,
+            message: e.message,
+            transaction: null,
+          };
+        }
+      },
 
-      try {
-        return {
-          code: 200,
-          success: true,
-          message: "Account created successfully",
-          user: userCreated,
-          token,
-        };
-      } catch (e) {
-        return {
-          code: 400,
-          success: false,
-          message: e.message,
-          user: null,
-          token: null,
-        };
-      }
-    },
-    activateAccount: async (_: any, args: any, ctx: any) => {
-      let user = await auth.activateAccount(args.token, ctx.id);
-      try {
-        return {
-          code: 200,
-          success: true,
-          message: "Account activated",
-          user: user,
-        };
-      } catch (e) {
-        return {
-          code: 400,
-          success: false,
-          message: "Account not activated",
-          user: null,
-        };
-      }
-    },
-    sendMoney: async (_: any, args: any, ctx: any) => {
-      try {
-        let transaction = await transactions.sendMoney(args.opts, ctx.id);
-        return {
-          code: 200,
-          success: true,
-          message: "Transaction Successfull",
-          transaction,
-        };
-      } catch (e) {
-        return {
-          code: 400,
-          success: false,
-          message: e.message,
-          transaction: null,
-        };
-      }
-    },
-    setupPin: async (_:any, args:any, ctx:any) => {
-      return auth.setupPin(args.pin,ctx.id);
-    }
-  },
+      setupPin: async (_:any, args:any, ctx:any) => {
+        return auth.setupPin(args.pin,ctx.id);
+      },
 
-  User: {
-    transactions: (_: any, args: any, ctx: any) => {
-      return transactions.getUserTransactionsHistory(_.id);
+      addAvatar: async (_:any, args:any, ctx:any) => {
+        try {
+          let avatar = await auth.uploadAvatar(args.avatarUrl, ctx.id);
+          return {
+            code:200,
+            success:true,
+            message:"Avatar uploaded successfully",
+            avatar
+          }
+        } catch (error) {
+          console.log('Avatar error: ', error);
+          return {
+            code:400,
+            success:false,
+            message:"Avatar upload failed",
+            avatar: null
+          }
+        }
+      },
     },
-  },
-};
-
-export default resolvers;
+    
+    User: {
+      transactions: (_: any, args: any, ctx: any) => {
+        return transactions.getUserTransactionsHistory(_.id);
+      },
+    },
+  };
+  
+  export default resolvers;
