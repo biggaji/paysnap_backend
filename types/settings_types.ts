@@ -4,6 +4,6 @@ export interface updatePasswordOpts {
 }
 
 export interface updatePinOpts {
-  oldpin: string;
-  newpin: string;
+  oldpin: number;
+  newpin: number;
 }
