@@ -254,12 +254,12 @@ const resolvers = {
           message: "Avatar uploaded successfully",
           avatar,
         };
-      } catch (error) {
-        console.log("Avatar error: ", error);
+      } catch (e) {
+        console.log("Avatar error: ", e);
         return {
           code: 400,
           success: false,
-          message: error.message,
+          message: e.message,
           avatar: null,
         };
       }
