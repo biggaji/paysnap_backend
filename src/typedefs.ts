@@ -28,18 +28,23 @@ const typedefs = gql`
     login(opts: LoginInputs!): LoginResponse!
     getAUser(id: ID!): User!
     me: User!
-    getTransaction(opts:FetchTransactionInputs): FetchTransactionResponse!
-    getNextTransactions(limit:Int!, calOpts:String!, after:String!):FetchTransactionResponse!
+    getTransaction(opts: FetchTransactionInputs): FetchTransactionResponse!
+    getNextTransactions(
+      limit: Int!
+      calOpts: String!
+      after: String!
+    ): FetchTransactionResponse!
   }
 
   type Mutation {
     createAccount(opts: CreateAccountInputs!): CreateAccountMutationResponse!
     activateAccount(token: String!): ActivateAccountResponse!
     sendMoney(opts: SendMoneyInputs!): SendMoneyResponse!
-    setTransactionPin(pin:Int!): Boolean!
-    addAvatar(avatarUrl:String!):AddAvatarResponse!
-    updateAvatar(avatarUrl:String!):AddAvatarResponse!
-    updateTransactionPin(opts: updateTransactionPinInputs!): updateTransactionPinResponse!
+    setTransactionPin(pin: Int!): Boolean!
+    addAvatar(avatarUrl: String!): AddAvatarResponse!
+    updateAvatar(avatarUrl: String!): AddAvatarResponse!
+    updateTransactionPin(opts: UpdateTransactionPinInputs!): UpdateTransactionPinResponse!
+    updatePassword(opts:UpdatePasswordInputs!): UpdatePasswordResponse!
   }
 
   input CreateAccountInputs {
@@ -56,24 +61,24 @@ const typedefs = gql`
   }
 
   input FetchTransactionInputs {
-      limit:Int!
-      calOpts:String!
+    limit: Int!
+    calOpts: String!
   }
 
-  input updateTransactionPinInputs {
-    oldpin:Int!
-    newpin:Int!
+  input UpdateTransactionPinInputs {
+    oldpin: Int!
+    newpin: Int!
   }
 
-  input updatePasswordInputs {
-    oldpassword:String!
-    newpassword:String!
+  input UpdatePasswordInputs {
+    oldpassword: String!
+    newpassword: String!
   }
 
   input SendMoneyInputs {
     receiverUsername: String!
     amount: Int!
-    pin:Int!
+    pin: Int!
   }
 
   type ActivateAccountResponse {
@@ -90,11 +95,18 @@ const typedefs = gql`
     avatar: User
   }
 
-  type updateTransactionPinResponse {
-    code:String!
+  type UpdateTransactionPinResponse {
+    code: String!
     success: Boolean!
     message: String!
     pinUpdated: Boolean!
+  }
+
+  type UpdatePasswordResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+    passwordUpdated: Boolean!
   }
 
   type SendMoneyResponse {
@@ -106,8 +118,8 @@ const typedefs = gql`
 
   type FetchTransactionResponse {
     transactions: [Transaction!]
-    hasNextPage:Boolean,
-    cursor:String
+    hasNextPage: Boolean
+    cursor: String
   }
 
   type LoginResponse {
@@ -130,7 +142,7 @@ const typedefs = gql`
     username: String!
     country: String!
     password: String!
-    pin:String
+    pin: String
     isactivated: Boolean
     verificationtoken: String
     avatar: String

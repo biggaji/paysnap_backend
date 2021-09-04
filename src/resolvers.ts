@@ -183,6 +183,25 @@ const resolvers = {
       }
     },
 
+    updatePassword : async (_:any, args:any, ctx:any) => {
+      try {
+        let passwordUpdated = await settings.updatePassword(args.opts, ctx.id);
+        return {
+          code: 400,
+          success: false,
+          message: "Password updated successfully",
+          passwordUpdated
+        }
+      } catch (e) {
+        return {
+          code: 400,
+          success: false,
+          message: e.message,
+          passwordUpdated:false
+        };
+      }
+    },
+
     sendMoney: async (_: any, args: any, ctx: any) => {
       try {
         let transaction = await transactions.sendMoney(args.opts, ctx.id);
