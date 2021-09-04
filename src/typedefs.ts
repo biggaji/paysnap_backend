@@ -38,6 +38,7 @@ const typedefs = gql`
     sendMoney(opts: SendMoneyInputs!): SendMoneyResponse!
     setupPin(pin:Int!): Boolean!
     addAvatar(avatarUrl:String!):AddAvatarResponse!
+    updateAvatar(avatarUrl:String!):AddAvatarResponse!
   }
 
   input CreateAccountInputs {
