@@ -166,7 +166,7 @@ class Auth {
       let pinsetup = await db.query(`UPDATE users SET pin = $1 WHERE id = $2 RETURNING pin`, [hashedPin, id]);
       return (pinsetup.rows[0].pin !== null) ? true : false;
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 
@@ -181,7 +181,7 @@ class Auth {
       let avatar = await db.query(`UPDATE users SET avatar = $1 WHERE id = $2 RETURNING avatar`, [avatarUrl,id]);
       return avatar.rows[0];
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 }

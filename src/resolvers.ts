@@ -177,7 +177,7 @@ const resolvers = {
         return {
           code: 400,
           success: false,
-          message: "Account not activated",
+          message: e.message,
           user: null,
         };
       }
@@ -202,8 +202,28 @@ const resolvers = {
       }
     },
 
-    setupPin: async (_: any, args: any, ctx: any) => {
+    setTransactionPin: async (_: any, args: any, ctx: any) => {
       return auth.setupPin(args.pin, ctx.id);
+    },
+
+    updateTransactionPin: async (_:any, args:any, ctx:any) => {
+      try {
+        let pinUpdated = await settings.updatePin(args.opts, ctx.id);
+        return {
+          code: 400,
+          success: false,
+          message: "Transaction pin updated successfully",
+          pinUpdated
+        };
+      } catch (error) {
+        console.log(`Update Transaction Pin error`, error);
+        return {
+          code: 400,
+          success: false,
+          message: error.message,
+          pinUpdated: false
+        }
+      }
     },
 
     addAvatar: async (_: any, args: any, ctx: any) => {
@@ -220,7 +240,7 @@ const resolvers = {
         return {
           code: 400,
           success: false,
-          message: "Avatar upload failed",
+          message: error.message,
           avatar: null,
         };
       }
@@ -240,7 +260,7 @@ const resolvers = {
         return {
           code: 400,
           success: false,
-          message: "Avatar upload failed",
+          message: error.message,
           avatar: null,
         };
       }

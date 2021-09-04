@@ -36,9 +36,10 @@ const typedefs = gql`
     createAccount(opts: CreateAccountInputs!): CreateAccountMutationResponse!
     activateAccount(token: String!): ActivateAccountResponse!
     sendMoney(opts: SendMoneyInputs!): SendMoneyResponse!
-    setupPin(pin:Int!): Boolean!
+    setTransactionPin(pin:Int!): Boolean!
     addAvatar(avatarUrl:String!):AddAvatarResponse!
     updateAvatar(avatarUrl:String!):AddAvatarResponse!
+    updateTransactionPin(opts: updateTransactionPinInputs!): updateTransactionPinResponse!
   }
 
   input CreateAccountInputs {
@@ -59,6 +60,22 @@ const typedefs = gql`
       calOpts:String!
   }
 
+  input updateTransactionPinInputs {
+    oldpin:Int!
+    newpin:Int!
+  }
+
+  input updatePasswordInputs {
+    oldpassword:String!
+    newpassword:String!
+  }
+
+  input SendMoneyInputs {
+    receiverUsername: String!
+    amount: Int!
+    pin:Int!
+  }
+
   type ActivateAccountResponse {
     code: String!
     success: Boolean!
@@ -73,10 +90,11 @@ const typedefs = gql`
     avatar: User
   }
 
-  input SendMoneyInputs {
-    receiverUsername: String!
-    amount: Int!
-    pin:Int!
+  type updateTransactionPinResponse {
+    code:String!
+    success: Boolean!
+    message: String!
+    pinUpdated: Boolean!
   }
 
   type SendMoneyResponse {
