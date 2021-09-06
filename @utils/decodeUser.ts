@@ -1,4 +1,4 @@
-import { AuthenticationError } from 'apollo-server-errors';
+import { AuthenticationError } from 'apollo-server-express';
 import { verify } from 'jsonwebtoken';
 
 async function decodeUser(token:any) {
