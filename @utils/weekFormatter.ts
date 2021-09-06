@@ -35,10 +35,6 @@ function getFirstDayOfTheWeek() {
 
     firstDayOfTheWeek = firstDayOfTheWeek.toString();
     let formatDayOfWeek;
-    let firstDayOfTheWeekArray = firstDayOfTheWeek.split("");
-    console.log(firstDayOfTheWeekArray)
-    firstDayOfTheWeek = firstDayOfTheWeekArray[1];
-
     // if()
 
     if(firstDayOfTheWeek.length === 1) {
