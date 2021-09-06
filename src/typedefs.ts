@@ -1,4 +1,4 @@
-import { gql } from 'apollo-server';
+import { gql } from 'apollo-server-express';
 import { GraphQLScalarType, Kind } from 'graphql';
 
 // Writing a custom scalar type for date
@@ -41,6 +41,10 @@ const typedefs = gql`
     updateAvatar(avatarUrl: String!): AddAvatarResponse!
     updateTransactionPin(opts: UpdateTransactionPinInputs!): UpdateTransactionPinResponse!
     updatePassword(opts:UpdatePasswordInputs!): UpdatePasswordResponse!
+  }
+
+  type Subscription {
+    newTransaction:Transaction
   }
 
   input CreateAccountInputs {

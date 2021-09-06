@@ -1,4 +1,4 @@
-import { UserInputError } from "apollo-server-errors";
+import { UserInputError } from "apollo-server-express";
 import getTodaysDate from "../../@utils/dateFormatter";
 import getMonth from "../../@utils/monthFormatter";
 import getFirstDayOfTheWeek from "../../@utils/weekFormatter";

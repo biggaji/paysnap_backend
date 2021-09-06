@@ -1,7 +1,7 @@
 import { db } from "../../configs";
 import { CreateAccoutOptions, CheckUserOptions, LoginOptions } from '../../types/auths_types';
 import generateActivationCode from '../../@utils/generateActivationCode';
-import { AuthenticationError, UserInputError } from 'apollo-server';
+import { AuthenticationError, UserInputError } from 'apollo-server-express';
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 

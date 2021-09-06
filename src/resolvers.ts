@@ -4,11 +4,29 @@ import { dateScalar } from "./typedefs";
 import { sign } from "jsonwebtoken";
 import { encrypt } from "../@utils/encryption";
 import Setting from './dataSources/settings';
-
+import { GooglePubSub } from '@axelspringer/graphql-google-pubsub';
+import { PubSub } from 'graphql-subscriptions';
 
 const auth = new Auth();
 const transactions = new Transaction();
 const settings = new Setting();
+
+// instanciate a new Google pubSub
+const pubsub = new PubSub();
+
+// publish event
+// pubsub.publish('NEW_TRANSACTION', {
+//   newTransaction: {
+//     amount: 2000,
+//     id: 'iouohhjhgyttytt77868fgyugg',
+//     receiverid: 'jhdugdhghqgiq73y36363gddvggdgd',
+//     senderid: 'ijhuhufyfyueyfhfyfyduodoifbffhc',
+//     transactionstatus: 'Successfull',
+//     transactedat: 10009392399
+//   }
+// });
+
+const NEW_TRANSACTION = 'NEW_TRANSACTION';
 
 const resolvers = {
   Date: dateScalar,
@@ -40,95 +58,82 @@ const resolvers = {
 
     getTransactions: async (_: any, args: any, ctx: any, info: any) => {
       // console.log("Info: ", info);golden for pagnation
-
-      try {
-        let transact = await transactions.getTransactions(
-          args.opts.limit,
-          ctx.id,
-          args.opts.calOpts
-        );
-
-        let allTransactCount = await transactions.countTransaction(
-          ctx.id,
-          args.opts.calOpts
-        );
-
-        let cursor, hasNextPage, cursorHash;
-
-        if (transact.length > 1) {
-          cursorHash = encrypt(transact[transact.length - 1].transactedat);
-          console.log(cursorHash);
-        }
-
-        if (transact && transact.length < allTransactCount) {
-          hasNextPage = true;
-          cursor = cursorHash;
-        } else {
-          hasNextPage = false;
-          cursor = "";
-        }
-
-        return {
-          transactions: transact,
-          hasNextPage,
-          cursor,
-        };
-      } catch (error) {
-        console.log(error);
-        return {
-          transactions: null,
-          hasNextpage: null,
-          cursor: null,
-        };
-      }
+      // try {
+      //   let transact = await transactions.getTransactions(
+      //     args.opts.limit,
+      //     ctx.id,
+      //     args.opts.calOpts
+      //   );
+      //   let allTransactCount = await transactions.countTransaction(
+      //     ctx.id,
+      //     args.opts.calOpts
+      //   );
+      //   let cursor, hasNextPage, cursorHash;
+      //   if (transact.length > 1) {
+      //     cursorHash = encrypt(transact[transact.length - 1].transactedat);
+      //     console.log(cursorHash);
+      //   }
+      //   if (transact && transact.length < allTransactCount) {
+      //     hasNextPage = true;
+      //     cursor = cursorHash;
+      //   } else {
+      //     hasNextPage = false;
+      //     cursor = "";
+      //   }
+      //   return {
+      //     transactions: transact,
+      //     hasNextPage,
+      //     cursor,
+      //   };
+      // } catch (error) {
+      //   console.log(error);
+      //   return {
+      //     transactions: null,
+      //     hasNextpage: null,
+      //     cursor: null,
+      //   };
+      // }
     },
 
     getNextTransactions: async (_: any, args: any, ctx: any) => {
       // "
-
-      try {
-        let transact = await transactions.getTransactions(
-          args.limit,
-          ctx.id,
-          args.calOpts,
-          args.after
-        );
-
-        let remainingTransactionCount = await transactions.countTransaction(
-          ctx.id,
-          args.calOpts,
-          args.after
-        );
-
-        let cursor, hasNextPage, cursorHash;
-
-        if (transact.length > 1) {
-          cursorHash = encrypt(transact[transact.length - 1].transactedat);
-          console.log(cursorHash);
-        }
-
-        if (transact && transact.length < remainingTransactionCount) {
-          hasNextPage = true;
-          cursor = cursorHash;
-        } else {
-          hasNextPage = false;
-          cursor = "";
-        }
-
-        return {
-          transactions: transact,
-          hasNextPage,
-          cursor,
-        };
-      } catch (error) {
-        console.log(error);
-        return {
-          transactions: null,
-          hasNextpage: null,
-          cursor: null,
-        };
-      }
-
+      // try {
+      //   let transact = await transactions.getTransactions(
+      //     args.limit,
+      //     ctx.id,
+      //     args.calOpts,
+      //     args.after
+      //   );
+      //   let remainingTransactionCount = await transactions.countTransaction(
+      //     ctx.id,
+      //     args.calOpts,
+      //     args.after
+      //   );
+      //   let cursor, hasNextPage, cursorHash;
+      //   if (transact.length > 1) {
+      //     cursorHash = encrypt(transact[transact.length - 1].transactedat);
+      //     console.log(cursorHash);
+      //   }
+      //   if (transact && transact.length < remainingTransactionCount) {
+      //     hasNextPage = true;
+      //     cursor = cursorHash;
+      //   } else {
+      //     hasNextPage = false;
+      //     cursor = "";
+      //   }
+      //   return {
+      //     transactions: transact,
+      //     hasNextPage,
+      //     cursor,
+      //   };
+      // } catch (error) {
+      //   console.log(error);
+      //   return {
+      //     transactions: null,
+      //     hasNextpage: null,
+      //     cursor: null,
+      //   };
+      // }
       // "
     },
   },
@@ -158,7 +163,7 @@ const resolvers = {
         return {
           code: 400,
           success: false,
-          message: e.message,
+          // message: e.message,
           user: null,
           token: null,
         };
@@ -177,27 +182,27 @@ const resolvers = {
         return {
           code: 400,
           success: false,
-          message: e.message,
+          // message: e.message,
           user: null,
         };
       }
     },
 
-    updatePassword : async (_:any, args:any, ctx:any) => {
+    updatePassword: async (_: any, args: any, ctx: any) => {
       try {
         let passwordUpdated = await settings.updatePassword(args.opts, ctx.id);
         return {
           code: 200,
           success: true,
           message: "Password updated successfully",
-          passwordUpdated
-        }
+          passwordUpdated,
+        };
       } catch (e) {
         return {
           code: 400,
           success: false,
-          message: e.message,
-          passwordUpdated:false
+          // message: e.message,
+          passwordUpdated: false,
         };
       }
     },
@@ -205,6 +210,9 @@ const resolvers = {
     sendMoney: async (_: any, args: any, ctx: any) => {
       try {
         let transaction = await transactions.sendMoney(args.opts, ctx.id);
+        pubsub.publish(NEW_TRANSACTION, {
+          newTransaction: transaction,
+        });
         return {
           code: 200,
           success: true,
@@ -212,10 +220,11 @@ const resolvers = {
           transaction,
         };
       } catch (e) {
+        console.log(e)
         return {
           code: 400,
           success: false,
-          message: e.message,
+          message: "transaction failed",
           transaction: null,
         };
       }
@@ -225,23 +234,23 @@ const resolvers = {
       return auth.setupPin(args.pin, ctx.id);
     },
 
-    updateTransactionPin: async (_:any, args:any, ctx:any) => {
+    updateTransactionPin: async (_: any, args: any, ctx: any) => {
       try {
         let pinUpdated = await settings.updatePin(args.opts, ctx.id);
         return {
           code: 200,
           success: true,
           message: "Transaction pin updated successfully",
-          pinUpdated
+          pinUpdated,
         };
       } catch (e) {
         console.log(`Update Transaction Pin error`, e);
         return {
           code: 400,
           success: false,
-          message: e.message,
-          pinUpdated: false
-        }
+          // message: e.message,
+          pinUpdated: false,
+        };
       }
     },
 
@@ -259,7 +268,7 @@ const resolvers = {
         return {
           code: 400,
           success: false,
-          message: e.message,
+          // message: e.message,
           avatar: null,
         };
       }
@@ -274,15 +283,21 @@ const resolvers = {
           message: "Avatar updated successfully",
           avatar,
         };
-      } catch (error) {
-        console.log("Avatar error: ", error);
+      } catch (e) {
+        console.log("Avatar error: ", e);
         return {
           code: 400,
           success: false,
-          message: error.message,
+          // message: e.message,
           avatar: null,
         };
       }
+    },
+  },
+
+  Subscription: {
+    newTransaction: {
+      subscribe: () => pubsub.asyncIterator(NEW_TRANSACTION)
     },
   },
 
