@@ -5,6 +5,7 @@ import { sign } from "jsonwebtoken";
 import { encrypt } from "../@utils/encryption";
 import Setting from './dataSources/settings';
 import { GooglePubSub } from '@axelspringer/graphql-google-pubsub';
+import { PublishError } from '@google-cloud/pubsub';
 import { PubSub } from 'graphql-subscriptions';
 
 const auth = new Auth();
@@ -13,18 +14,6 @@ const settings = new Setting();
 
 // instanciate a new Google pubSub
 const pubsub = new PubSub();
-
-// publish event
-// pubsub.publish('NEW_TRANSACTION', {
-//   newTransaction: {
-//     amount: 2000,
-//     id: 'iouohhjhgyttytt77868fgyugg',
-//     receiverid: 'jhdugdhghqgiq73y36363gddvggdgd',
-//     senderid: 'ijhuhufyfyueyfhfyfyduodoifbffhc',
-//     transactionstatus: 'Successfull',
-//     transactedat: 10009392399
-//   }
-// });
 
 const NEW_TRANSACTION = 'NEW_TRANSACTION';
 
@@ -57,83 +46,83 @@ const resolvers = {
     },
 
     getTransactions: async (_: any, args: any, ctx: any, info: any) => {
-      // console.log("Info: ", info);golden for pagnation
-      // try {
-      //   let transact = await transactions.getTransactions(
-      //     args.opts.limit,
-      //     ctx.id,
-      //     args.opts.calOpts
-      //   );
-      //   let allTransactCount = await transactions.countTransaction(
-      //     ctx.id,
-      //     args.opts.calOpts
-      //   );
-      //   let cursor, hasNextPage, cursorHash;
-      //   if (transact.length > 1) {
-      //     cursorHash = encrypt(transact[transact.length - 1].transactedat);
-      //     console.log(cursorHash);
-      //   }
-      //   if (transact && transact.length < allTransactCount) {
-      //     hasNextPage = true;
-      //     cursor = cursorHash;
-      //   } else {
-      //     hasNextPage = false;
-      //     cursor = "";
-      //   }
-      //   return {
-      //     transactions: transact,
-      //     hasNextPage,
-      //     cursor,
-      //   };
-      // } catch (error) {
-      //   console.log(error);
-      //   return {
-      //     transactions: null,
-      //     hasNextpage: null,
-      //     cursor: null,
-      //   };
-      // }
+      try {
+        let transact:any = await transactions.getTransactions(
+          args.opts.limit,
+          ctx.id,
+          args.opts.calOpts
+        );
+
+        let allTransactCount:any = await transactions.countTransaction(
+          ctx.id,
+          args.opts.calOpts
+        );
+        let cursor, hasNextPage, cursorHash;
+        if (transact.length > 1) {
+          cursorHash = encrypt(transact[transact.length - 1].transactedat);
+          // console.log(cursorHash);
+        }
+        if (transact && transact.length < allTransactCount) {
+          hasNextPage = true;
+          cursor = cursorHash;
+        } else {
+          hasNextPage = false;
+          cursor = "";
+        }
+        return {
+          transactions: transact,
+          hasNextPage,
+          cursor,
+        };
+      } catch (error) {
+        console.log(error);
+        return {
+          transactions: null,
+          hasNextpage: null,
+          cursor: null,
+        };
+      }
     },
 
     getNextTransactions: async (_: any, args: any, ctx: any) => {
       // "
-      // try {
-      //   let transact = await transactions.getTransactions(
-      //     args.limit,
-      //     ctx.id,
-      //     args.calOpts,
-      //     args.after
-      //   );
-      //   let remainingTransactionCount = await transactions.countTransaction(
-      //     ctx.id,
-      //     args.calOpts,
-      //     args.after
-      //   );
-      //   let cursor, hasNextPage, cursorHash;
-      //   if (transact.length > 1) {
-      //     cursorHash = encrypt(transact[transact.length - 1].transactedat);
-      //     console.log(cursorHash);
-      //   }
-      //   if (transact && transact.length < remainingTransactionCount) {
-      //     hasNextPage = true;
-      //     cursor = cursorHash;
-      //   } else {
-      //     hasNextPage = false;
-      //     cursor = "";
-      //   }
-      //   return {
-      //     transactions: transact,
-      //     hasNextPage,
-      //     cursor,
-      //   };
-      // } catch (error) {
-      //   console.log(error);
-      //   return {
-      //     transactions: null,
-      //     hasNextpage: null,
-      //     cursor: null,
-      //   };
-      // }
+      try {
+        let transact:any = await transactions.getTransactions(
+          args.limit,
+          ctx.id,
+          args.calOpts,
+          args.after
+        );
+        let remainingTransactionCount:any = await transactions.countTransaction(
+          ctx.id,
+          args.calOpts,
+          args.after
+        );
+        let cursor, hasNextPage, cursorHash;
+        if (transact.length > 1) {
+          cursorHash = encrypt(transact[transact.length - 1].transactedat);
+          // console.log(cursorHash);
+        }
+        if (transact && transact.length < remainingTransactionCount) {
+          hasNextPage = true;
+          cursor = cursorHash;
+        } else {
+          hasNextPage = false;
+          cursor = "";
+        }
+        return {
+          transactions: transact,
+          hasNextPage,
+          cursor,
+        };
+      } catch (error) {
+        console.log(error);
+        return {
+          transactions: null,
+          hasNextpage: null,
+          cursor: null,
+        };
+      }
       // "
     },
   },
@@ -159,11 +148,11 @@ const resolvers = {
           user: userCreated,
           token,
         };
-      } catch (e) {
+      } catch (e:any) {
         return {
           code: 400,
           success: false,
-          // message: e.message,
+          message: e.message,
           user: null,
           token: null,
         };
@@ -178,11 +167,11 @@ const resolvers = {
           message: "Account activated",
           user: user,
         };
-      } catch (e) {
+      } catch (e:any) {
         return {
           code: 400,
           success: false,
-          // message: e.message,
+          message: e.message,
           user: null,
         };
       }
@@ -197,11 +186,11 @@ const resolvers = {
           message: "Password updated successfully",
           passwordUpdated,
         };
-      } catch (e) {
+      } catch (e:any) {
         return {
           code: 400,
           success: false,
-          // message: e.message,
+          message: e.message,
           passwordUpdated: false,
         };
       }
@@ -219,12 +208,11 @@ const resolvers = {
           message: "Transaction Successfull",
           transaction,
         };
-      } catch (e) {
-        console.log(e)
+      } catch (e:any) {
         return {
           code: 400,
           success: false,
-          message: "transaction failed",
+          message: e.message,
           transaction: null,
         };
       }
@@ -243,12 +231,12 @@ const resolvers = {
           message: "Transaction pin updated successfully",
           pinUpdated,
         };
-      } catch (e) {
-        console.log(`Update Transaction Pin error`, e);
+      } catch (e:any) {
+        // console.log(`Update Transaction Pin error`, e);
         return {
           code: 400,
           success: false,
-          // message: e.message,
+          message: e.message,
           pinUpdated: false,
         };
       }
@@ -263,12 +251,12 @@ const resolvers = {
           message: "Avatar uploaded successfully",
           avatar,
         };
-      } catch (e) {
+      } catch (e:any) {
         console.log("Avatar error: ", e);
         return {
           code: 400,
           success: false,
-          // message: e.message,
+          message: e.message,
           avatar: null,
         };
       }
@@ -283,12 +271,12 @@ const resolvers = {
           message: "Avatar updated successfully",
           avatar,
         };
-      } catch (e) {
+      } catch (e:any) {
         console.log("Avatar error: ", e);
         return {
           code: 400,
           success: false,
-          // message: e.message,
+          message: e.message,
           avatar: null,
         };
       }

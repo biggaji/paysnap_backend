@@ -1,6 +1,5 @@
 import { config } from  'dotenv';
 config();
-// import { ApolloServer, AuthenticationError } from 'apollo-server';
 import { ApolloServer, AuthenticationError} from 'apollo-server-express';
 import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
@@ -39,9 +38,10 @@ import decodeUser from './@utils/decodeUser';
       
       if(!user) {
         throw new AuthenticationError("Session expired, login again!");
+      } else {
+        return user;
       }
       
-      return user;
     }
   });
   
