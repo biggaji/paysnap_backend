@@ -17,6 +17,7 @@ jobs:
       - run: npm run build
   deploy:
     name: Deploy code to heroku server
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
