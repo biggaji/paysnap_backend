@@ -1,5 +1,8 @@
 import { config } from  'dotenv';
-config();
+if (process.env.NODE_ENV !== "production") {
+  config();
+}
+
 import { ApolloServer, AuthenticationError} from 'apollo-server-express';
 import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
