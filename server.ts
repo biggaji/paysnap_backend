@@ -35,16 +35,19 @@ import decodeUser from './@utils/decodeUser';
       }
     }],
     context: async ({ req }) => {
-      
-      let token = req.headers.authorization || req.headers.x_user_token;
-      const user = await decodeUser(token);
-      
-      if(!user) {
-        throw new AuthenticationError("Session expired, login again!");
-      } else {
-        return user;
+      let user;
+
+      if( req && req.headers.x_user_token !== undefined ) {
+        let token = req.headers.authorization || req.headers.x_user_token;
+        user = await decodeUser(token);
+        
+        if(!user || user === null) {
+          throw new AuthenticationError("Session expired, login again!");
+        } else {
+          return user;
+        }
       }
-      
+      return null;
     }
   });
   
