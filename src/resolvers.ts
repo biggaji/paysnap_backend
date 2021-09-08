@@ -4,16 +4,16 @@ import { dateScalar } from "./typedefs";
 import { sign } from "jsonwebtoken";
 import { encrypt } from "../@utils/encryption";
 import Setting from './dataSources/settings';
-import { GooglePubSub } from '@axelspringer/graphql-google-pubsub';
-import { PubSub as gsPub } from 'graphql-subscriptions';
+import { PubSub } from 'graphql-subscriptions';
+
 
 const auth = new Auth();
 const transactions = new Transaction();
 const settings = new Setting();
 
-const NEW_TRANSACTION = "projects/ps-notify-325410/topics/NEW_TRANSACTION";
-// let NEW_TRANSACTION = 'NEW_TRANSACTION';
-const pubsub = new GooglePubSub();
+let NEW_TRANSACTION = 'NEW_TRANSACTION';
+
+let pubsub = new PubSub();
 
 
 const resolvers = {
