@@ -5,17 +5,16 @@ import { sign } from "jsonwebtoken";
 import { encrypt } from "../@utils/encryption";
 import Setting from './dataSources/settings';
 import { GooglePubSub } from '@axelspringer/graphql-google-pubsub';
-import { PublishError } from '@google-cloud/pubsub';
-import { PubSub } from 'graphql-subscriptions';
+import { PubSub as gsPub } from 'graphql-subscriptions';
 
 const auth = new Auth();
 const transactions = new Transaction();
 const settings = new Setting();
 
-// instanciate a new Google pubSub
-const pubsub = new PubSub();
+const NEW_TRANSACTION = "projects/ps-notify-325410/topics/NEW_TRANSACTION";
+// let NEW_TRANSACTION = 'NEW_TRANSACTION';
+const pubsub = new GooglePubSub();
 
-const NEW_TRANSACTION = 'NEW_TRANSACTION';
 
 const resolvers = {
   Date: dateScalar,
@@ -47,13 +46,13 @@ const resolvers = {
 
     getTransactions: async (_: any, args: any, ctx: any, info: any) => {
       try {
-        let transact:any = await transactions.getTransactions(
+        let transact: any = await transactions.getTransactions(
           args.opts.limit,
           ctx.id,
           args.opts.calOpts
         );
 
-        let allTransactCount:any = await transactions.countTransaction(
+        let allTransactCount: any = await transactions.countTransaction(
           ctx.id,
           args.opts.calOpts
         );
@@ -87,17 +86,14 @@ const resolvers = {
     getNextTransactions: async (_: any, args: any, ctx: any) => {
       // "
       try {
-        let transact:any = await transactions.getTransactions(
+        let transact: any = await transactions.getTransactions(
           args.limit,
           ctx.id,
           args.calOpts,
           args.after
         );
-        let remainingTransactionCount:any = await transactions.countTransaction(
-          ctx.id,
-          args.calOpts,
-          args.after
-        );
+        let remainingTransactionCount: any =
+          await transactions.countTransaction(ctx.id, args.calOpts, args.after);
         let cursor, hasNextPage, cursorHash;
         if (transact.length > 1) {
           cursorHash = encrypt(transact[transact.length - 1].transactedat);
@@ -148,7 +144,7 @@ const resolvers = {
           user: userCreated,
           token,
         };
-      } catch (e:any) {
+      } catch (e: any) {
         return {
           code: 400,
           success: false,
@@ -167,7 +163,7 @@ const resolvers = {
           message: "Account activated",
           user: user,
         };
-      } catch (e:any) {
+      } catch (e: any) {
         return {
           code: 400,
           success: false,
@@ -186,7 +182,7 @@ const resolvers = {
           message: "Password updated successfully",
           passwordUpdated,
         };
-      } catch (e:any) {
+      } catch (e: any) {
         return {
           code: 400,
           success: false,
@@ -199,16 +195,19 @@ const resolvers = {
     sendMoney: async (_: any, args: any, ctx: any) => {
       try {
         let transaction = await transactions.sendMoney(args.opts, ctx.id);
-        pubsub.publish(NEW_TRANSACTION, {
-          newTransaction: transaction,
-        });
+        pubsub.publish(
+          NEW_TRANSACTION,
+          {
+            newTransaction: transaction,
+          }
+        );
         return {
           code: 200,
           success: true,
           message: "Transaction Successfull",
           transaction,
         };
-      } catch (e:any) {
+      } catch (e: any) {
         return {
           code: 400,
           success: false,
@@ -231,7 +230,7 @@ const resolvers = {
           message: "Transaction pin updated successfully",
           pinUpdated,
         };
-      } catch (e:any) {
+      } catch (e: any) {
         // console.log(`Update Transaction Pin error`, e);
         return {
           code: 400,
@@ -251,7 +250,7 @@ const resolvers = {
           message: "Avatar uploaded successfully",
           avatar,
         };
-      } catch (e:any) {
+      } catch (e: any) {
         console.log("Avatar error: ", e);
         return {
           code: 400,
@@ -271,7 +270,7 @@ const resolvers = {
           message: "Avatar updated successfully",
           avatar,
         };
-      } catch (e:any) {
+      } catch (e: any) {
         console.log("Avatar error: ", e);
         return {
           code: 400,
@@ -285,7 +284,10 @@ const resolvers = {
 
   Subscription: {
     newTransaction: {
-      subscribe: () => pubsub.asyncIterator(NEW_TRANSACTION)
+      subscribe: () =>
+        pubsub.asyncIterator(
+          NEW_TRANSACTION
+        ),
     },
   },
 
