@@ -7,7 +7,7 @@ import Setting from './dataSources/settings';
 import { PubSub } from 'graphql-subscriptions';
 
 
-const auth = new Auth();
+const auth = new Auth(); 
 const transactions = new Transaction();
 const settings = new Setting();
 
@@ -120,6 +120,26 @@ const resolvers = {
         };
       }
       // "
+    },
+
+    checkIfUsernameExist : async (_:any, args:any, ctx:any) =>  {
+      try {
+        let { username } = args;
+        let user = await auth.checkIfUserExist({username});
+        return user;
+      } catch (e) {
+        throw e;
+      }
+    },
+
+    checkIfEmailExist : async (_:any, args:any, ctx:any)  => {
+      try {
+        let { email } = args;
+        let user = await auth.checkIfUserExist({email});
+        return user;
+      } catch (e) {
+        throw e;
+      }
     },
   },
 
