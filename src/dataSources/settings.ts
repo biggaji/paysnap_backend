@@ -1,7 +1,7 @@
 import { db } from "../../configs";
 import { updatePasswordOpts, updatePinOpts } from "../../types/settings_types";
 import { hash, compare } from 'bcryptjs';
-import { UserInputError } from "apollo-server-errors";
+import { ForbiddenError, UserInputError } from "apollo-server-errors";
 
 class Setting {
   constructor() {}
@@ -77,6 +77,27 @@ class Setting {
         [avatarUrl, id]
       );
       return avatar.rows[0];
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async cashRefill(id:string) {
+    try {
+      let refill;
+      let currentBalance:any = await db.query(`SELECT accountbalance FROM users WHERE id = $1`, [id]);
+
+      currentBalance = currentBalance.rows[0].accountbalance;
+
+      if(currentBalance > 0 ) {
+        throw new ForbiddenError("Your account balance has to be 0 before you can refill");
+      } else {
+        currentBalance += 100000;
+        
+        refill = await db.query(`UPDATE users SET accountbalance = $1 WHERE id = $2 RETURNING accountbalance`, [currentBalance, id]);
+      }
+
+      return (refill.rows[0].accountbalance !== null) ? true : false;
     } catch (e) {
       throw e;
     }
