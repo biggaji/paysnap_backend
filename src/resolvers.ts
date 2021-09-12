@@ -141,6 +141,45 @@ const resolvers = {
         throw e;
       }
     },
+
+    resendActivationCode: async (_:any, args:any, ctx:any) => {
+      try {
+        let { email } = args;
+        let code = await auth.resendActivationCode(email);
+        return {
+          code: 200,
+          success: true,
+          message: "Activation token re-sent successfully",
+          activation_code: code
+        }
+      } catch (e:any) {
+        return {
+          code: 400,
+          success: false,
+          message: e.message,
+          activation_code: null
+        };
+      }
+    },
+    
+    requestCashRefill: async (_:any, args:any, ctx:any) => {
+      try {
+        let refilled = await settings.cashRefill(ctx.id);
+        return {
+          code: 200,
+          success: true,
+          message: "Cash re-filled successfully",
+          refilled
+        };
+      } catch (e: any) {
+        return {
+          code: 400,
+          success: false,
+          message: e.message,
+          refilled: false,
+        };
+      }
+    },
   },
 
   Mutation: {

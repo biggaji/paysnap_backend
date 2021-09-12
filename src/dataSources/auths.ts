@@ -55,12 +55,13 @@ class Auth {
       html: `<html>
             <body>
             <h1>Welcome to paysnap!</h1>
-            <p>You’re just one click away from getting started with Paysnap.
+            <p>You’re just one click away from getting started with Paysnap.</p>
              All you need to do is activate your Paysnap account with the code below.</p>
                   <p>${activationCode}</p>
-             <p>Once your account is activated, you can start sending cash to your loved one's using Paysnap.</p>
+             <p>Once your account is activated, you can start sending cash using Paysnap.</p>
               <p>You’re receiving this email because you recently created a new Paysnap account.
                If this wasn’t you, please ignore this email.</p>
+               <p>Thanks, <br> The Paysnap Team.</p>
                </body>
                </html>
         `,
@@ -156,6 +157,49 @@ class Auth {
       return isActivated.rows[0];
     } else {
       throw new UserInputError("Invalid or incorrect token");
+    }
+  }
+
+  async resendActivationCode(email:string) {
+    try {
+
+      let activationCode = generateActivationCode();
+
+      const msg = {
+        from: `Paysnap Team <noreply@paysnap.com>`,
+        to: email,
+        subject: "You're almost there! Just confirm your email",
+        html: `<html>
+            <body>
+            <p>You’re just one click away from getting started with Paysnap.</p>
+             All you need to do is activate your Paysnap account with the code below.</p>
+                  <p>${activationCode}</p>
+             <p>Once your account is activated, you can start sending cash using Paysnap.</p>
+              <p>You’re receiving this email because you recently created a new Paysnap account.
+               If this wasn’t you, please ignore this email.</p>
+               <p>Thanks,<br> The Paysnap Team.</p>
+               </body>
+               </html>
+        `,
+      };
+
+      mailTransport.sendMail(msg, (err, res) => {
+        if (err) {
+          console.log(err.message);
+          throw err;
+        } else {
+          console.log(`Activation code request Mail sent`, res.response);
+        }
+      });
+
+      // update verificationtoken column  with auth code
+
+      let codeUpdate = await db.query(`UPDATE users SET verificationtoken = $1 WHERE email = $2 RETURNING verificationtoken`, [
+        activationCode, email ]);
+
+        return codeUpdate.rows[0].verificationtoken;
+    } catch (e) {
+      throw e;
     }
   }
 
