@@ -29,9 +29,15 @@ const typedefs = gql`
     getAUser(id: ID!): User!
     me: User!
     getTransactions(opts: FetchTransactionInputs): FetchTransactionResponse!
-    getNextTransactions(limit: Int!calOpts: String!after: String!): FetchTransactionResponse!
-    checkIfUsernameExist(username:String!):User!
-    checkIfEmailExist(email:String!):User!
+    getNextTransactions(
+      limit: Int!
+      calOpts: String!
+      after: String!
+    ): FetchTransactionResponse!
+    checkIfUsernameExist(username: String!): User!
+    checkIfEmailExist(email: String!): User!
+    resendActivationCode(email:String!):ResendActivationCodeResponse!
+    requestCashRefill:RequestCashRefillResponse!
   }
 
   type Mutation {
@@ -41,12 +47,14 @@ const typedefs = gql`
     setTransactionPin(pin: Int!): Boolean!
     addAvatar(avatarUrl: String!): AddAvatarResponse!
     updateAvatar(avatarUrl: String!): AddAvatarResponse!
-    updateTransactionPin(opts: UpdateTransactionPinInputs!): UpdateTransactionPinResponse!
-    updatePassword(opts:UpdatePasswordInputs!): UpdatePasswordResponse!
+    updateTransactionPin(
+      opts: UpdateTransactionPinInputs!
+    ): UpdateTransactionPinResponse!
+    updatePassword(opts: UpdatePasswordInputs!): UpdatePasswordResponse!
   }
 
   type Subscription {
-    newTransaction:Transaction
+    newTransaction: Transaction
   }
 
   input CreateAccountInputs {
@@ -88,6 +96,20 @@ const typedefs = gql`
     success: Boolean!
     message: String!
     user: User
+  }
+
+  type ResendActivationCodeResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+    activation_code: User
+  }
+
+  type RequestCashRefillResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+    refilled: Boolean
   }
 
   type AddAvatarResponse {
