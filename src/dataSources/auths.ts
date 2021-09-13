@@ -33,8 +33,8 @@ class Auth {
     
     // first check if user exist using this.checkUserexist(email)
     let user = await this.checkIfUserExist({ email });
-
-    if(user.email && user.email !== null) {
+    
+    if(user && user !== null) {
         throw new AuthenticationError("User alreadly exist, please signin instead!");
     }
 
@@ -92,7 +92,7 @@ class Auth {
     let user = await this.checkIfUserExist({username})
 
     // if not exist throw error else check if is activated and compare users password with
-    if(user.username && user.username !== null) {
+    if(user && user !== null) {
       // query password from database
       let passW = await db.query(`SELECT password FROM users WHERE username = $1`, [username]);
       // compare password with the one in the database
