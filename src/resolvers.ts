@@ -181,31 +181,6 @@ const resolvers = {
       }
     },
 
-    updateActivationCodeColumnToNull: async (_: any, args: any, ctx: any) => {
-      try {
-        let updatedCodeColumn = await auth.updateActivationCodeColumnToNull(args.email);
-        
-        let updated = updatedCodeColumn !== null ? true : false;
-
-        return {
-          code: 200,
-          success: true,
-          message: "Code updated to null",
-          activation_code: updatedCodeColumn,
-          updated
-        };
-      } catch (e: any) {
-        console.log(e.message);
-        return {
-          code: 400,
-          success: false,
-          message: e.message,
-          activation_code: null,
-          updated: false
-        };
-      }
-    },
-
     deleteAccount: async (_: any, args: any, ctx: any) => {
       try {
         let deleted = await settings.deleteAccount(ctx.id);
@@ -214,16 +189,16 @@ const resolvers = {
           code: 200,
           success: true,
           message: "Account delete successfully",
-          deleted
+          deleted,
         };
-      } catch (e:any) {
+      } catch (e: any) {
         console.log(e.message);
         return {
           code: 400,
           success: false,
           message: e.message,
-          deleted: false
-        }
+          deleted: false,
+        };
       }
     },
   },
@@ -293,6 +268,33 @@ const resolvers = {
           success: false,
           message: e.message,
           passwordUpdated: false,
+        };
+      }
+    },
+
+    updateActivationCodeColumnToNull: async (_: any, args: any, ctx: any) => {
+      try {
+        let updatedCodeColumn = await auth.updateActivationCodeColumnToNull(
+          args.email
+        );
+
+        let updated = updatedCodeColumn !== null ? true : false;
+
+        return {
+          code: 200,
+          success: true,
+          message: "Code updated to null",
+          activation_code: updatedCodeColumn,
+          updated,
+        };
+      } catch (e: any) {
+        console.log(e.message);
+        return {
+          code: 400,
+          success: false,
+          message: e.message,
+          activation_code: null,
+          updated: false,
         };
       }
     },

@@ -38,7 +38,6 @@ const typedefs = gql`
     checkIfEmailExist(email: String!): User!
     resendActivationCode(email: String!): ResendActivationCodeResponse!
     requestCashRefill: RequestCashRefillResponse!
-    updateActivationCodeColumnToNull(email: String!): UpdateActivationCodeColumnResponse!
     deleteAccount: DeleteAccountResponse!
   }
 
@@ -48,6 +47,7 @@ const typedefs = gql`
     sendMoney(opts: SendMoneyInputs!): SendMoneyResponse!
     setTransactionPin(pin: Int!): Boolean!
     addAvatar(avatarUrl: String!): AddAvatarResponse!
+    updateActivationCodeColumnToNull(email: String!): UpdateActivationCodeColumnResponse!
     updateAvatar(avatarUrl: String!): AddAvatarResponse!
     updateTransactionPin(opts: UpdateTransactionPinInputs!): UpdateTransactionPinResponse!
     updatePassword(opts: UpdatePasswordInputs!): UpdatePasswordResponse!
