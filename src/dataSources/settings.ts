@@ -102,6 +102,16 @@ class Setting {
       throw e;
     }
   }
+
+  async deleteAccount(id:string) {
+    try {
+      let deleteUser = await db.query(`DELETE FROM users WHERE id = $1 RETURNING id`, [id]);
+
+      return (deleteUser.rows[0].id !== null) ? true : false;
+    } catch (e) {
+      throw e;
+    }
+  }
 }
 
 export default Setting;
