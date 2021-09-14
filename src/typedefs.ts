@@ -36,8 +36,10 @@ const typedefs = gql`
     ): FetchTransactionResponse!
     checkIfUsernameExist(username: String!): User!
     checkIfEmailExist(email: String!): User!
-    resendActivationCode(email:String!):ResendActivationCodeResponse!
-    requestCashRefill:RequestCashRefillResponse!
+    resendActivationCode(email: String!): ResendActivationCodeResponse!
+    requestCashRefill: RequestCashRefillResponse!
+    updateActivationCodeColumnToNull(email: String!): UpdateActivationCodeColumnResponse!
+    deleteAccount: DeleteAccountResponse!
   }
 
   type Mutation {
@@ -47,9 +49,7 @@ const typedefs = gql`
     setTransactionPin(pin: Int!): Boolean!
     addAvatar(avatarUrl: String!): AddAvatarResponse!
     updateAvatar(avatarUrl: String!): AddAvatarResponse!
-    updateTransactionPin(
-      opts: UpdateTransactionPinInputs!
-    ): UpdateTransactionPinResponse!
+    updateTransactionPin(opts: UpdateTransactionPinInputs!): UpdateTransactionPinResponse!
     updatePassword(opts: UpdatePasswordInputs!): UpdatePasswordResponse!
   }
 
@@ -105,6 +105,14 @@ const typedefs = gql`
     activation_code: User
   }
 
+  type UpdateActivationCodeColumnResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+    activation_code: User
+    updated: Boolean
+  }
+
   type RequestCashRefillResponse {
     code: String!
     success: Boolean!
@@ -157,6 +165,13 @@ const typedefs = gql`
     message: String!
     user: User
     token: String
+  }
+
+  type DeleteAccountResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+    deleted: Boolean!
   }
 
   type User {
