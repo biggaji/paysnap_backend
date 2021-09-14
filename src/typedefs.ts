@@ -42,7 +42,7 @@ const typedefs = gql`
 
   type Mutation {
     createAccount(opts: CreateAccountInputs!): CreateAccountMutationResponse!
-    activateAccount(token: String!): ActivateAccountResponse!
+    activateAccount(code: String!): ActivateAccountResponse!
     sendMoney(opts: SendMoneyInputs!): SendMoneyResponse!
     setTransactionPin(pin: Int!): Boolean!
     addAvatar(avatarUrl: String!): AddAvatarResponse!
