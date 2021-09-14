@@ -134,7 +134,7 @@ class Auth {
     }
   }
 
-  async activateAccount(token:string, id:string) {
+  async activateAccount(code:string, id:string) {
 
     // check token passed and validate with the one stored
     let userActivated = await (await db.query(`SELECT isactivated FROM users WHERE id = $1`, [id])).rows[0].isactivated;
@@ -143,11 +143,11 @@ class Auth {
       throw new AuthenticationError("Account is already activated");
     }
 
-    let dbToken:any = await db.query(`SELECT verificationtoken FROM users WHERE id = $1`,[id]);
+    let dbCode:any = await db.query(`SELECT verificationtoken FROM users WHERE id = $1`,[id]);
     // // if correct, update column to true
-    dbToken = dbToken.rows[0].verificationtoken;
+    dbCode = dbCode.rows[0].verificationtoken;
 
-    if(token === dbToken) {
+    if(code === dbCode) {
       //update isActivated to true
       let isActivated = await db.query(`UPDATE users SET isactivated = $1 WHERE id = $2 RETURNING *`,['true', id]);
       
@@ -156,7 +156,7 @@ class Auth {
 
       return isActivated.rows[0];
     } else {
-      throw new UserInputError("Invalid or incorrect token");
+      throw new UserInputError("Invalid or incorrect activation code");
     }
   }
 

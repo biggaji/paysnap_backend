@@ -214,7 +214,7 @@ const resolvers = {
       }
     },
     activateAccount: async (_: any, args: any, ctx: any) => {
-      let user = await auth.activateAccount(args.token, ctx.id);
+      let user = await auth.activateAccount(args.code, ctx.id);
       try {
         return {
           code: 200,
