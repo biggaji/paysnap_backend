@@ -203,6 +203,15 @@ class Auth {
     }
   }
 
+  async updateActivationCodeColumnToNull(email:string) {
+    try {
+      let updatedColumn = await db.query(`UPDATE users SET verificationtoken = $1 WHERE email = $2 RETURNING verificationtoken`, [null, email]);
+      return updatedColumn.rows[0].verificationtoken;
+    } catch (e) {
+      throw e;
+    }
+  }
+
   async setupPin(pin:number, id:string) {
     try {
       let transactPin = pin.toString();

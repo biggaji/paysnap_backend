@@ -122,27 +122,27 @@ const resolvers = {
       // "
     },
 
-    checkIfUsernameExist : async (_:any, args:any, ctx:any) =>  {
+    checkIfUsernameExist: async (_: any, args: any, ctx: any) => {
       try {
         let { username } = args;
-        let user = await auth.checkIfUserExist({username});
+        let user = await auth.checkIfUserExist({ username });
         return user;
       } catch (e) {
         throw e;
       }
     },
 
-    checkIfEmailExist : async (_:any, args:any, ctx:any)  => {
+    checkIfEmailExist: async (_: any, args: any, ctx: any) => {
       try {
         let { email } = args;
-        let user = await auth.checkIfUserExist({email});
+        let user = await auth.checkIfUserExist({ email });
         return user;
       } catch (e) {
         throw e;
       }
     },
 
-    resendActivationCode: async (_:any, args:any, ctx:any) => {
+    resendActivationCode: async (_: any, args: any, ctx: any) => {
       try {
         let { email } = args;
         let code = await auth.resendActivationCode(email);
@@ -150,26 +150,26 @@ const resolvers = {
           code: 200,
           success: true,
           message: "Activation token re-sent successfully",
-          activation_code: code
-        }
-      } catch (e:any) {
+          activation_code: code,
+        };
+      } catch (e: any) {
         return {
           code: 400,
           success: false,
           message: e.message,
-          activation_code: null
+          activation_code: null,
         };
       }
     },
-    
-    requestCashRefill: async (_:any, args:any, ctx:any) => {
+
+    requestCashRefill: async (_: any, args: any, ctx: any) => {
       try {
         let refilled = await settings.cashRefill(ctx.id);
         return {
           code: 200,
           success: true,
           message: "Cash re-filled successfully",
-          refilled
+          refilled,
         };
       } catch (e: any) {
         return {
@@ -177,6 +177,27 @@ const resolvers = {
           success: false,
           message: e.message,
           refilled: false,
+        };
+      }
+    },
+
+    deleteAccount: async (_: any, args: any, ctx: any) => {
+      try {
+        let deleted = await settings.deleteAccount(ctx.id);
+
+        return {
+          code: 200,
+          success: true,
+          message: "Account delete successfully",
+          deleted,
+        };
+      } catch (e: any) {
+        console.log(e.message);
+        return {
+          code: 400,
+          success: false,
+          message: e.message,
+          deleted: false,
         };
       }
     },
@@ -251,15 +272,39 @@ const resolvers = {
       }
     },
 
+    updateActivationCodeColumnToNull: async (_: any, args: any, ctx: any) => {
+      try {
+        let updatedCodeColumn = await auth.updateActivationCodeColumnToNull(
+          args.email
+        );
+
+        let updated = updatedCodeColumn !== null ? true : false;
+
+        return {
+          code: 200,
+          success: true,
+          message: "Code updated to null",
+          activation_code: updatedCodeColumn,
+          updated,
+        };
+      } catch (e: any) {
+        console.log(e.message);
+        return {
+          code: 400,
+          success: false,
+          message: e.message,
+          activation_code: null,
+          updated: false,
+        };
+      }
+    },
+
     sendMoney: async (_: any, args: any, ctx: any) => {
       try {
         let transaction = await transactions.sendMoney(args.opts, ctx.id);
-        pubsub.publish(
-          NEW_TRANSACTION,
-          {
-            newTransaction: transaction,
-          }
-        );
+        pubsub.publish(NEW_TRANSACTION, {
+          newTransaction: transaction,
+        });
         return {
           code: 200,
           success: true,
@@ -343,10 +388,7 @@ const resolvers = {
 
   Subscription: {
     newTransaction: {
-      subscribe: () =>
-        pubsub.asyncIterator(
-          NEW_TRANSACTION
-        ),
+      subscribe: () => pubsub.asyncIterator(NEW_TRANSACTION),
     },
   },
 
