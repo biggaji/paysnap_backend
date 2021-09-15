@@ -34,8 +34,8 @@ const typedefs = gql`
       calOpts: String!
       after: String!
     ): FetchTransactionResponse!
-    checkIfUsernameExist(username: String!): User!
-    checkIfEmailExist(email: String!): User!
+    checkIfUsernameExist(username: String!): User
+    checkIfEmailExist(email: String!): User
     resendActivationCode(email: String!): ResendActivationCodeResponse!
     requestCashRefill: RequestCashRefillResponse!
     deleteAccount: DeleteAccountResponse!
