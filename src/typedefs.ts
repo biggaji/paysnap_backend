@@ -102,7 +102,7 @@ const typedefs = gql`
     code: String!
     success: Boolean!
     message: String!
-    activation_code: User
+    activation_code: Int!
   }
 
   type UpdateActivationCodeColumnResponse {

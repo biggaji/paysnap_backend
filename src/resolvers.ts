@@ -146,6 +146,7 @@ const resolvers = {
       try {
         let { email } = args;
         let code = await auth.resendActivationCode(email);
+
         return {
           code: 200,
           success: true,
