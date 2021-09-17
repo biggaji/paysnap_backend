@@ -196,7 +196,6 @@ class Auth {
 
       let codeUpdate = await db.query(`UPDATE users SET verificationtoken = $1 WHERE email = $2 RETURNING verificationtoken`, [
         activationCode, email ]);
-
         return codeUpdate.rows[0].verificationtoken;
     } catch (e) {
       throw e;
