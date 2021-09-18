@@ -27,7 +27,7 @@ const typedefs = gql`
     getUser: [User!]
     login(opts: LoginInputs!): LoginResponse!
     getAUser(id: ID!): User!
-    me: User
+    me: User!
     getTransactions(opts: FetchTransactionInputs): FetchTransactionResponse!
     getNextTransactions(limit: Int!,calOpts: String!,after: String!): FetchTransactionResponse!
     checkIfUsernameExist(username: String!): User
