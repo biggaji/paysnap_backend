@@ -35,7 +35,7 @@ class Auth {
     let user = await this.checkIfUserExist({ email });
     
     if(user && user !== null) {
-        throw new AuthenticationError("User alreadly exist, please signin instead!");
+        throw new AuthenticationError("User alreadly exist, signin instead!");
     }
 
     // hash password
@@ -101,12 +101,12 @@ class Auth {
         // return data
         return await this.getUserData({username});
       } else {
-        throw new AuthenticationError("Incorrect Credentials!, try again.")
+        throw new AuthenticationError("Incorrect Credentials")
       }
 
     } else {
       // not a user
-       throw new AuthenticationError("You are not a registered user, please register first!");
+       throw new AuthenticationError("You are not registered yet");
     }
   }
 
