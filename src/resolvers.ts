@@ -44,7 +44,7 @@ const resolvers = {
       };
     },
 
-    getTransactions: async (_: any, args: any, ctx: any, info: any) => {
+    getTransactions: async (_: any, args: any, ctx: any) => {
       try {
         let transact: any = await transactions.getTransactions(
           args.opts.limit,
@@ -59,7 +59,6 @@ const resolvers = {
         let cursor, hasNextPage, cursorHash;
         if (transact.length > 1) {
           cursorHash = encrypt(transact[transact.length - 1].transactedat);
-          // console.log(cursorHash);
         }
         if (transact && transact.length < allTransactCount) {
           hasNextPage = true;

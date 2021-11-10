@@ -147,6 +147,7 @@ class Transaction {
   }
 
   async getThisWeekTransactions(userId: string, limit: number, after?:string) {
+    // I could just extract the week from the the now()
     // That weeks monday to present day
     let firstDateOfTheWeek = await getFirstDayOfTheWeek();
     console.log(firstDateOfTheWeek)
