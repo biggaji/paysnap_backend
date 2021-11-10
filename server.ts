@@ -41,7 +41,7 @@ import decodeUser from './@utils/decodeUser';
         let token = req.headers.authorization || req.headers.x_user_token;
         user = await decodeUser(token);
         
-        if(!user || user === null) {
+        if(!user) {
           throw new AuthenticationError("Session expired, login again!");
         } else {
           return user;
