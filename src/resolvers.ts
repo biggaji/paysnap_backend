@@ -322,7 +322,22 @@ const resolvers = {
     },
 
     setTransactionPin: async (_: any, args: any, ctx: any) => {
-      return auth.setupPin(args.pin, ctx.id);
+      try {
+        let isSet = await auth.setupPin(args.pin, ctx.id);
+          return {
+            code: 200,
+            success: true,
+            message: "Pin set successfully",
+            isSet
+          }
+      } catch (e:any) {
+        return {
+          code: 400,
+          success: true,
+          message: e.message,
+          isSet: false
+        };
+      }
     },
 
     updateTransactionPin: async (_: any, args: any, ctx: any) => {
