@@ -220,14 +220,15 @@ class Auth {
 
   async setupPin(pin:number, id:string) {
     try {
-      console.log(pin);
       let transactPin = pin.toString();
       if(transactPin.length > 4) {
         throw new UserInputError("Pin must be 4 numbers exactly");
       }
+      console.log(pin);
       let hashedPin = await bcrypt.hash(transactPin, 10);
+      console.log(hashedPin);
       let pinsetup = await db.query(`UPDATE users SET pin = $1 WHERE id = $2 RETURNING pin`, [hashedPin, id]);
-      console.log(pinsetup.rows)
+      console.log(pinsetup)
       return (pinsetup.rows[0].pin !== null) ? true : false;
     } catch (error) {
       throw error;
