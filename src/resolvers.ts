@@ -333,7 +333,7 @@ const resolvers = {
       } catch (e:any) {
         return {
           code: 400,
-          success: true,
+          success: false,
           message: e.message,
           isSet: false
         };
