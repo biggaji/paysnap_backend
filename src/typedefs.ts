@@ -41,7 +41,7 @@ const typedefs = gql`
     createAccount(opts: CreateAccountInputs!): CreateAccountMutationResponse!
     activateAccount(code: String!): ActivateAccountResponse!
     sendMoney(opts: SendMoneyInputs!): SendMoneyResponse!
-    setTransactionPin(pin: Int!): Boolean!
+    setTransactionPin(pin: Int!): SetPinResponse!
     addAvatar(avatarUrl: String!): AddAvatarResponse!
     updateActivationCodeColumnToNull(email: String!): UpdateActivationCodeColumnResponse!
     updateAvatar(avatarUrl: String!): AddAvatarResponse!
@@ -114,6 +114,13 @@ const typedefs = gql`
     success: Boolean!
     message: String!
     refilled: Boolean
+  }
+  
+  type SetPinResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+    isSet:Boolean!
   }
 
   type AddAvatarResponse {

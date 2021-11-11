@@ -214,6 +214,9 @@ class Auth {
   async setupPin(pin:number, id:string) {
     try {
       let transactPin = pin.toString();
+      if(transactPin.length > 4) {
+        throw new UserInputError("Pin must be 4 numbers exactly");
+      }
       let hashedPin = await bcrypt.hash(transactPin, 10);
       let pinsetup = await db.query(`UPDATE users SET pin = $1 WHERE id = $2 RETURNING pin`, [hashedPin, id]);
       return (pinsetup.rows[0].pin !== null) ? true : false;
