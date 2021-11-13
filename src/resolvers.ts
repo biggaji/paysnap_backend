@@ -26,7 +26,6 @@ const resolvers = {
       return auth.getAUserById(args.id);
     },
     me: (_: any, args: any, ctx: any) => {
-      console.log(ctx)
       return auth.getAUserById(ctx.id);
     },
     login: async (_: any, args: any) => {

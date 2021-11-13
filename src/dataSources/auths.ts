@@ -224,22 +224,9 @@ class Auth {
       if(transactPin.length > 4) {
         throw new UserInputError("Pin must be 4 numbers exactly");
       }
-      console.log(pin);
       let hashedPin = await bcrypt.hash(transactPin, 10);
-      console.log(hashedPin);
-      // let pinsetup = await db.query(`UPDATE users SET pin = $1 WHERE id = $2 RETURNING pin`, [hashedPin, id]);
-      // console.log(pinsetup)
-      // return (pinsetup.rows[0].pin !== null) ? true : false;
-      console.log(`User id pin setup `,id);
-      db.query(`UPDATE users SET pin = $1 WHERE id = $2 RETURNING *`, [hashedPin, id])
-      .then(res => {
-        console.log(res);
-        return (res.rows[0].pin !== null) ? true : false;
-      })
-      .catch(err => {
-        console.log(`DB error `, err);
-        throw err;
-      });
+      let pinsetup = await db.query(`UPDATE users SET pin = $1 WHERE id = $2 RETURNING pin`, [hashedPin, id]);
+      return (pinsetup.rows[0].pin !== null) ? true : false;
     } catch (error) {
       throw error;
     }
