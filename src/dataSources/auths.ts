@@ -230,7 +230,8 @@ class Auth {
       // let pinsetup = await db.query(`UPDATE users SET pin = $1 WHERE id = $2 RETURNING pin`, [hashedPin, id]);
       // console.log(pinsetup)
       // return (pinsetup.rows[0].pin !== null) ? true : false;
-      db.query(`UPDATE users SET pin = $1 WHERE id = $2 RETURNING pin`, [hashedPin, id])
+      console.log(id);
+      db.query(`UPDATE users SET pin = $1 WHERE id = $2 RETURNING *`, [hashedPin, id])
       .then(res => {
         console.log(res);
         return (res.rows[0].pin !== null) ? true : false;
