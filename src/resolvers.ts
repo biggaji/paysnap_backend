@@ -322,6 +322,7 @@ const resolvers = {
     },
 
     setTransactionPin: async (_: any, args: any, ctx: any) => {
+      console.log(ctx);
       try {
         let isSet = await auth.setupPin(args.pin, ctx.id);
           return {
