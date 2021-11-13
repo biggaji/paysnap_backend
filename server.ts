@@ -40,14 +40,16 @@ import decodeUser from './@utils/decodeUser';
       if( req && req.headers.x_user_token !== undefined ) {
         let token = req.headers.authorization || req.headers.x_user_token;
         user = await decodeUser(token);
+        // console.log(user)
+        return user;
         
-        if(!user) {
-          throw new AuthenticationError("Session expired, login again!");
-        } else {
-          return user;
-        }
+      //   if(!user) {
+      //     throw new AuthenticationError("Session expired, login again!");
+      //   } else {
+      //   }
       }
-      return null;
+      // return null;
+
     }
   });
   

@@ -7,7 +7,7 @@ async function decodeUser(token:any) {
         return user;
     } catch (e) {
         console.log(`Jwt error: An error occured with the identification process `, e);
-        throw new AuthenticationError("Error processing JWT TOKEN");
+        throw new AuthenticationError("Invalid or expired jwt token.");
     }
 };
 
